@@ -56,3 +56,7 @@ const modRegistry: ReadonlyMap<string, ModCardRule> = new Map([
 export function getModRule(modId: string): ModCardRule | undefined {
   return modRegistry.get(modId);
 }
+
+export function listModRules(): readonly ModCardRule[] {
+  return Object.freeze(Array.from(modRegistry.values()));
+}

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { getModRule, SERRATION_ID } from "./mod-registry";
+import type { ModCardRule } from "./model";
+import { getModRule, listModRules, SERRATION_ID } from "./mod-registry";
 
 describe("Serration registry entry", () => {
   it("stores every Wiki rank value as an explicit literal", () => {
@@ -46,6 +47,17 @@ describe("Serration registry entry", () => {
 
   it("returns undefined for a Mod outside the published registry", () => {
     expect(getModRule("invented-mod")).toBeUndefined();
+  });
+
+  it("lists each published Mod exactly once without exposing registry mutation", () => {
+    const published = listModRules();
+
+    expect(published.map((rule) => rule.modId)).toEqual([SERRATION_ID]);
+    expect(Object.isFrozen(published)).toBe(true);
+    expect(() =>
+      (published as ModCardRule[]).push(published[0] as ModCardRule),
+    ).toThrow(TypeError);
+    expect(listModRules()).toHaveLength(1);
   });
 
   it("keeps the published rank table immutable and tied to a permanent Wiki revision", () => {
