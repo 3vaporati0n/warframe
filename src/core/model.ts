@@ -44,6 +44,15 @@ export interface ModCardRule {
   readonly dataVerification: VerificationState;
 }
 
+export interface WeaponRule {
+  readonly weaponId: string;
+  readonly name: string;
+  readonly category: "primary" | "melee";
+  readonly baseDamage: number;
+  readonly dataVerification: VerificationState;
+  readonly source: WikiSourceRef;
+}
+
 export interface InstalledMod {
   readonly modId: string;
   readonly rank: number;
@@ -56,6 +65,7 @@ export interface BuildSlot {
 }
 
 export interface BuildInput {
+  readonly weaponId?: string;
   readonly capacityLimit: number;
   readonly slots: readonly BuildSlot[];
 }
@@ -63,13 +73,14 @@ export interface BuildInput {
 export interface FormulaOperand {
   readonly label: string;
   readonly value: number;
-  readonly source: "mod" | "rank" | "slot" | "system";
+  readonly source: "weapon" | "mod" | "rank" | "slot" | "system";
   readonly sourceRef?: WikiSourceRef;
 }
 
 export interface FormulaTrace {
   readonly id: string;
   readonly stage: "capacity" | "base-damage";
+  readonly multiplierGroup?: "capacity" | "base-damage-additive";
   readonly expression: string;
   readonly result: number;
   readonly operands: readonly FormulaOperand[];
@@ -79,6 +90,8 @@ export interface FormulaTrace {
 
 export interface BuildIssue {
   readonly code:
+    | "UNKNOWN_WEAPON"
+    | "UNVERIFIED_WEAPON_DATA"
     | "UNKNOWN_MOD"
     | "INVALID_RANK"
     | "DUPLICATE_MOD"
@@ -87,6 +100,13 @@ export interface BuildIssue {
   readonly message: string;
   readonly slotIndex?: number;
   readonly modId?: string;
+}
+
+export interface DamageResearchPreview {
+  readonly weaponName: string;
+  readonly baseDamage: number;
+  readonly moddedBaseDamage: number;
+  readonly verification: "unverified";
 }
 
 export interface BuildEvaluation {
@@ -98,4 +118,5 @@ export interface BuildEvaluation {
   readonly isComplete: boolean;
   readonly issues: readonly BuildIssue[];
   readonly trace: readonly FormulaTrace[];
+  readonly researchPreview?: DamageResearchPreview;
 }

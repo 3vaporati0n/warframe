@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { evaluateBuild } from "./evaluate-build";
+import { KARAK_RESEARCH_ID } from "./weapon-registry";
 
 const serrationSource = {
   label: "WARFRAME Wiki — Serration revision 2699779",
@@ -203,6 +204,69 @@ describe("evaluateBuild", () => {
     expect(evaluation.issues).toContainEqual({
       code: "OVER_CAPACITY",
       message: "已使用容量 7 超过上限 6。",
+    });
+  });
+
+  it("executes the Wiki base-damage formula only as an unverified research preview", () => {
+    const evaluation = evaluateBuild({
+      weaponId: KARAK_RESEARCH_ID,
+      capacityLimit: 30,
+      slots: [
+        {
+          index: 0,
+          polarity: "madurai",
+          installedMod: { modId: "serration", rank: 8 },
+        },
+      ],
+    });
+
+    expect(evaluation.researchPreview).toEqual({
+      weaponName: "Karak（Wiki 示例）",
+      baseDamage: 29,
+      moddedBaseDamage: 68.15,
+      verification: "unverified",
+    });
+    expect(evaluation.isComplete).toBe(false);
+    expect(evaluation.trace).toContainEqual(
+      expect.objectContaining({
+        id: "base-damage-research-karak-wiki-research",
+        stage: "base-damage",
+        multiplierGroup: "base-damage-additive",
+        expression: "29 × (1 + 1.35) = 68.15",
+        result: 68.15,
+        verification: "unverified",
+      }),
+    );
+  });
+
+  it("rejects an unknown weapon without inventing a damage preview", () => {
+    const evaluation = evaluateBuild({
+      weaponId: "invented-weapon",
+      capacityLimit: 30,
+      slots: [],
+    });
+
+    expect(evaluation.isLegal).toBe(false);
+    expect(evaluation.isComplete).toBe(false);
+    expect(evaluation.researchPreview).toBeUndefined();
+    expect(evaluation.issues).toContainEqual({
+      code: "UNKNOWN_WEAPON",
+      message: "未知武器：invented-weapon。",
+    });
+  });
+
+  it("keeps an unverified weapon fixture incomplete even without Mods", () => {
+    const evaluation = evaluateBuild({
+      weaponId: KARAK_RESEARCH_ID,
+      capacityLimit: 30,
+      slots: [],
+    });
+
+    expect(evaluation.isLegal).toBe(true);
+    expect(evaluation.isComplete).toBe(false);
+    expect(evaluation.issues).toContainEqual({
+      code: "UNVERIFIED_WEAPON_DATA",
+      message: "Karak（Wiki 示例）的基础数据尚未通过结构化快照与游戏实测双重验证。",
     });
   });
 });

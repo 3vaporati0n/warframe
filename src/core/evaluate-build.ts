@@ -1,5 +1,6 @@
 import { slotDrain } from "./capacity";
 import { getModRule } from "./mod-registry";
+import { getWeaponRule } from "./weapon-registry";
 import type {
   BuildEvaluation,
   BuildInput,
@@ -10,6 +11,12 @@ import type {
   RankValue,
   WikiSourceRef,
 } from "./model";
+
+const damageCalculationSource: WikiSourceRef = Object.freeze({
+  label: "WARFRAME Wiki Fandom archive — Damage/Calculation",
+  url: "https://warframe.fandom.com/wiki/Damage/Calculation",
+  retrievedAt: "2026-08-10",
+});
 
 const polaritySource: WikiSourceRef = Object.freeze({
   label: "WARFRAME Wiki — Polarity revision 2793391",
@@ -74,6 +81,10 @@ export function evaluateBuild(input: BuildInput): BuildEvaluation {
   const issues: BuildIssue[] = [];
   const trace: FormulaTrace[] = [];
   const seenModIds = new Set<string>();
+  const baseDamageContributions: Array<{
+    rule: ModCardRule;
+    rankValue: RankValue;
+  }> = [];
   let usedCapacity = 0;
 
   for (const slot of input.slots) {
@@ -124,6 +135,10 @@ export function evaluateBuild(input: BuildInput): BuildEvaluation {
     usedCapacity += adjustedDrain;
     trace.push(capacityTrace(slot, rule, rankValue, adjustedDrain));
 
+    if (rule.effects.some((effect) => effect.kind === "base-damage")) {
+      baseDamageContributions.push({ rule, rankValue });
+    }
+
     if (rule.effects.some((effect) => effect.verification !== "verified")) {
       issues.push({
         code: "UNVERIFIED_EFFECT",
@@ -141,8 +156,70 @@ export function evaluateBuild(input: BuildInput): BuildEvaluation {
     });
   }
 
+  let researchPreview: BuildEvaluation["researchPreview"];
+  if (input.weaponId) {
+    const weapon = getWeaponRule(input.weaponId);
+
+    if (!weapon) {
+      issues.push({
+        code: "UNKNOWN_WEAPON",
+        message: `未知武器：${input.weaponId}。`,
+      });
+    } else {
+      if (weapon.dataVerification !== "verified") {
+        issues.push({
+          code: "UNVERIFIED_WEAPON_DATA",
+          message: `${weapon.name}的基础数据尚未通过结构化快照与游戏实测双重验证。`,
+        });
+      }
+
+      const bonusMultiplier = baseDamageContributions.reduce(
+        (total, contribution) =>
+          total + contribution.rankValue.effectPercent / 100,
+        0,
+      );
+      const moddedBaseDamage = Number(
+        (weapon.baseDamage * (1 + bonusMultiplier)).toFixed(6),
+      );
+      const bonusText = String(bonusMultiplier);
+      const resultText = String(moddedBaseDamage);
+
+      researchPreview = {
+        weaponName: weapon.name,
+        baseDamage: weapon.baseDamage,
+        moddedBaseDamage,
+        verification: "unverified",
+      };
+      trace.push({
+        id: `base-damage-research-${weapon.weaponId}`,
+        stage: "base-damage",
+        multiplierGroup: "base-damage-additive",
+        expression: `${weapon.baseDamage} × (1 + ${bonusText}) = ${resultText}`,
+        result: moddedBaseDamage,
+        operands: [
+          {
+            label: "武器基础伤害",
+            value: weapon.baseDamage,
+            source: "weapon",
+            sourceRef: weapon.source,
+          },
+          ...baseDamageContributions.map(({ rule, rankValue }) => ({
+            label: `${rule.name} R${rankValue.rank}`,
+            value: rankValue.effectPercent / 100,
+            source: "rank" as const,
+            sourceRef: rule.sources[0],
+          })),
+        ],
+        source: damageCalculationSource,
+        verification: "unverified",
+      });
+    }
+  }
+
   const isLegal = !issues.some(
-    (issue) => issue.code !== "UNVERIFIED_EFFECT",
+    (issue) =>
+      issue.code !== "UNVERIFIED_EFFECT" &&
+      issue.code !== "UNVERIFIED_WEAPON_DATA",
   );
 
   return {
@@ -151,5 +228,6 @@ export function evaluateBuild(input: BuildInput): BuildEvaluation {
     isComplete: issues.length === 0,
     issues,
     trace,
+    ...(researchPreview ? { researchPreview } : {}),
   };
 }
