@@ -15,6 +15,10 @@ function sourceName(source: WikiSourceRef): string {
 }
 
 function traceName(trace: FormulaTrace): string {
+  if (trace.id.startsWith("base-damage-research-")) {
+    return "Karak Wiki 研究基础伤害公式";
+  }
+
   const match = /^capacity-slot-(\d+)-(.+)$/.exec(trace.id);
   if (!match) {
     return `${trace.id} 公式`;
@@ -23,6 +27,14 @@ function traceName(trace: FormulaTrace): string {
   const slotNumber = Number(match[1]) + 1;
   const modName = match[2] === "serration" ? "Serration" : match[2];
   return `槽位 ${slotNumber} ${modName} 容量公式`;
+}
+
+function multiplierGroupName(trace: FormulaTrace): string {
+  if (trace.multiplierGroup === "base-damage-additive") {
+    return "基础伤害加算区";
+  }
+
+  return trace.stage === "capacity" ? "容量乘区" : trace.stage;
 }
 
 export function FormulaPanel({ evaluation }: FormulaPanelProps) {
@@ -37,6 +49,30 @@ export function FormulaPanel({ evaluation }: FormulaPanelProps) {
           {evaluation.isComplete ? "当前容量结果完整" : "结果不完整"}
         </p>
       </header>
+
+      {evaluation.researchPreview ? (
+        <section
+          className={styles.preview}
+          aria-labelledby="damage-research-preview-heading"
+        >
+          <h3 id="damage-research-preview-heading">
+            研究预览（不计入正式伤害）
+          </h3>
+          <p>{evaluation.researchPreview.weaponName}</p>
+          <dl>
+            <div>
+              <dt>基础伤害</dt>
+              <dd>基础伤害 {evaluation.researchPreview.baseDamage}</dd>
+            </div>
+            <div>
+              <dt>Mod 后预览</dt>
+              <dd>
+                Mod 后预览 {evaluation.researchPreview.moddedBaseDamage}
+              </dd>
+            </div>
+          </dl>
+        </section>
+      ) : null}
 
       {evaluation.issues.length > 0 ? (
         <div className={styles.issues}>
@@ -61,10 +97,24 @@ export function FormulaPanel({ evaluation }: FormulaPanelProps) {
             aria-label={traceName(trace)}
           >
             <header className={styles.traceHeader}>
-              <span>{trace.stage === "capacity" ? "容量乘区" : trace.stage}</span>
-              <span>{trace.verification === "verified" ? "已验证" : "未验证"}</span>
+              <span>{multiplierGroupName(trace)}</span>
+              <span>
+                {trace.verification === "verified"
+                  ? "已验证"
+                  : "未通过游戏实测"}
+              </span>
             </header>
             <code className={styles.expression}>{trace.expression}</code>
+            {trace.source ? (
+              <a
+                className={styles.formulaSource}
+                href={trace.source.url}
+                target="_blank"
+                rel="noreferrer"
+              >
+                公式来源
+              </a>
+            ) : null}
             <dl className={styles.operands}>
               {trace.operands.map((operand) => (
                 <div

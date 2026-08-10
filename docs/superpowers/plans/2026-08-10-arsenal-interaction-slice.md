@@ -85,7 +85,7 @@ git push
 - Produces: `WeaponRule`, `getWeaponRule(id)`, `KARAK_RESEARCH_ID`, `BuildInput.weaponId`, `BuildEvaluation.researchPreview`.
 - `researchPreview` contains `weaponName`, `baseDamage`, `moddedBaseDamage`, and `verification: "unverified"`; it is never a final-damage field.
 
-- [ ] **Step 1: Write failing weapon-registry tests**
+- [x] **Step 1: Write failing weapon-registry tests**
 
 ```ts
 expect(getWeaponRule(KARAK_RESEARCH_ID)).toMatchObject({
@@ -97,16 +97,16 @@ expect(getWeaponRule(KARAK_RESEARCH_ID)).toMatchObject({
 
 The source is the Wiki worked example in `Calculating Bonuses`; the fixture remains unverified because a current structured-data snapshot and saved in-game observation are not both present.
 
-- [ ] **Step 2: Run weapon RED**
+- [x] **Step 2: Run weapon RED**
 
 Run: `npm test -- src/core/weapon-registry.test.ts`
 Expected: FAIL because the registry does not exist.
 
-- [ ] **Step 3: Implement the minimal frozen weapon fixture and model types**
+- [x] **Step 3: Implement the minimal frozen weapon fixture and model types**
 
 Add the weapon source URL and retrieval date. Add `weaponId?: string` to `BuildInput`; absence preserves existing capacity-only behavior.
 
-- [ ] **Step 4: Write failing evaluator research-preview tests**
+- [x] **Step 4: Write failing evaluator research-preview tests**
 
 ```ts
 const result = evaluateBuild({
@@ -124,16 +124,16 @@ expect(result.trace).toContainEqual(expect.objectContaining({
 }));
 ```
 
-- [ ] **Step 5: Run evaluator RED**
+- [x] **Step 5: Run evaluator RED**
 
 Run: `npm test -- src/core/evaluate-build.test.ts`
 Expected: FAIL because no research preview or base-damage trace is produced.
 
-- [ ] **Step 6: Execute only the Wiki formula as an unverified trace**
+- [x] **Step 6: Execute only the Wiki formula as an unverified trace**
 
 Sum applicable base-damage bonuses, calculate `baseDamage × (1 + Σ bonuses)`, preserve `UNVERIFIED_EFFECT`, and never set `isComplete` true. Unknown weapon IDs add `UNKNOWN_WEAPON` and do not calculate.
 
-- [ ] **Step 7: Run GREEN and commit the second five-file batch**
+- [x] **Step 7: Run GREEN and commit the second five-file batch**
 
 Run: `npm test -- src/core/weapon-registry.test.ts src/core/evaluate-build.test.ts`
 Expected: all selected tests pass.
@@ -157,33 +157,33 @@ git push
 - `ModLibrary` consumes `readonly ModCardRule[]` and emits `onInstall(modId)`; each library item sets `draggable`, writes MIME type `application/x-warframe-mod`, and exposes a click button.
 - `SlotGrid` emits `onDropMod(slotIndex, modId)`, `onMoveMod(fromIndex, toIndex)`, `onRemove(slotIndex)`, `onRankChange(slotIndex, rank)`, and `onPolarityChange(slotIndex, polarity)`.
 
-- [ ] **Step 1: Write ModLibrary RED tests**
+- [x] **Step 1: Write ModLibrary RED tests**
 
 Assert Serration is visible with rarity, polarity, max rank, verification badge, neutral-art label, an install button, and a draggable wrapper whose drag start writes the custom MIME payload.
 
-- [ ] **Step 2: Run ModLibrary RED**
+- [x] **Step 2: Run ModLibrary RED**
 
 Run: `npm test -- src/features/calculator/mod-library.test.tsx`
 Expected: FAIL because the component does not exist.
 
-- [ ] **Step 3: Implement the horizontal library item and accessible click path**
+- [x] **Step 3: Implement the horizontal library item and accessible click path**
 
 Do not add remote art yet. Render a neutral art block with `图片待验证` and preserve full text when art is unavailable.
 
-- [ ] **Step 4: Write SlotGrid RED tests**
+- [x] **Step 4: Write SlotGrid RED tests**
 
 Test a custom-MIME library drop, an installed-card slot move using `text/x-warframe-slot-index`, the remove button, rank callback, and a polarity `<select>` change. Assert an occupied target delegates to `onMoveMod` only for slot payloads.
 
-- [ ] **Step 5: Run SlotGrid RED**
+- [x] **Step 5: Run SlotGrid RED**
 
 Run: `npm test -- src/features/calculator/slot-grid.test.tsx`
 Expected: FAIL because the new callbacks and drop behavior do not exist.
 
-- [ ] **Step 6: Implement native drop targets and all equivalent controls**
+- [x] **Step 6: Implement native drop targets and all equivalent controls**
 
 Use `preventDefault()` only for recognized drag types. Keep buttons and labeled selects usable without dragging. Render the installed card wrapper as draggable but keep its rank slider interactive.
 
-- [ ] **Step 7: Run GREEN and commit the third five-file batch**
+- [x] **Step 7: Run GREEN and commit the third five-file batch**
 
 Run: `npm test -- src/features/calculator/mod-library.test.tsx src/features/calculator/slot-grid.test.tsx`
 Expected: both component suites pass.
@@ -207,40 +207,42 @@ git push
 - `Calculator` owns immutable slots, selects the Karak research fixture, calls the pure editor functions, and renders `ModLibrary`, `SlotGrid`, and `FormulaPanel` from one evaluation.
 - `FormulaPanel` labels `researchPreview` as `研究预览（不计入正式伤害）` and displays multiplier group `基础伤害加算区` plus unverified source state.
 
-- [ ] **Step 1: Write the failing end-to-end component test**
+- [x] **Step 1: Write the failing end-to-end component test**
 
 Install Serration from the library into slot 1, change R8→R10, change slot polarity Madurai→none, move to slot 2, then remove. Assert capacity changes `6→7→14`, the formula changes `68.15→76.85`, the research warning remains, and capacity returns to zero after removal.
 
-- [ ] **Step 2: Run Calculator RED**
+- [x] **Step 2: Run Calculator RED**
 
 Run: `npm test -- src/features/calculator/calculator.test.tsx`
 Expected: FAIL because the library and editor integration are absent.
 
-- [ ] **Step 3: Integrate the pure editor functions and responsive layout**
+- [x] **Step 3: Integrate the pure editor functions and responsive layout**
 
 Keep `Calculator` as the only state owner. Library click installs into the first empty slot; drop installs into the chosen slot. Invalid operations leave state unchanged and retain the existing visible build.
 
-- [ ] **Step 4: Write FormulaPanel RED tests**
+- [x] **Step 4: Write FormulaPanel RED tests**
 
 Assert the panel shows `29 × (1 + 1.35) = 68.15`, `基础伤害加算区`, `未通过游戏实测`, the Wiki source link, and no label claiming final damage or accurate DPS.
 
-- [ ] **Step 5: Run FormulaPanel RED**
+- [x] **Step 5: Run FormulaPanel RED**
 
 Run: `npm test -- src/features/calculator/formula-panel.test.tsx`
 Expected: FAIL because research-preview copy and multiplier-group labels are absent.
 
-- [ ] **Step 6: Render the executed research trace without promoting it**
+- [x] **Step 6: Render the executed research trace without promoting it**
 
 Use the evaluator output directly; do not reproduce the arithmetic in React. Style the library below the workspace and keep the 4×2 desktop grid / one-column narrow layout.
 
-- [ ] **Step 7: Run GREEN and commit the fourth five-file batch**
+- [x] **Step 7: Run GREEN and commit the integration/formula batches**
 
-Run: `npm test -- src/features/calculator/calculator.test.tsx src/features/calculator/formula-panel.test.tsx`
-Expected: both suites pass.
+Run: `npm test -- src/features/calculator/calculator.test.tsx src/features/calculator/formula-panel.test.tsx src/features/calculator/slot-grid.test.tsx`
+Expected: all three suites pass.
 
 ```bash
-git add src/features/calculator/calculator.test.tsx src/features/calculator/calculator.tsx src/features/calculator/calculator.module.css src/features/calculator/formula-panel.test.tsx src/features/calculator/formula-panel.tsx
+git add src/features/calculator/calculator.test.tsx src/features/calculator/calculator.tsx src/features/calculator/calculator.module.css src/features/calculator/slot-grid.test.tsx src/features/calculator/slot-grid.tsx
 git commit -m "feat: integrate interactive arsenal research preview"
+git add src/features/calculator/formula-panel.test.tsx src/features/calculator/formula-panel.tsx src/features/calculator/formula-panel.module.css README.md docs/superpowers/plans/2026-08-10-arsenal-interaction-slice.md
+git commit -m "feat: label unverified damage research preview"
 git push
 ```
 

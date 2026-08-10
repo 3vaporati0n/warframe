@@ -2,6 +2,7 @@ import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { evaluateBuild } from "@/core/evaluate-build";
+import { KARAK_RESEARCH_ID } from "@/core/weapon-registry";
 
 import { FormulaPanel } from "./formula-panel";
 
@@ -56,5 +57,45 @@ describe("FormulaPanel", () => {
 
     expect(screen.getByRole("status")).toHaveTextContent("当前容量结果完整");
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
+  it("labels the executed damage formula as research instead of final damage", () => {
+    const evaluation = evaluateBuild({
+      weaponId: KARAK_RESEARCH_ID,
+      capacityLimit: 30,
+      slots: [
+        {
+          index: 0,
+          polarity: "madurai",
+          installedMod: { modId: "serration", rank: 8 },
+        },
+      ],
+    });
+
+    render(<FormulaPanel evaluation={evaluation} />);
+
+    const preview = screen.getByRole("region", {
+      name: "研究预览（不计入正式伤害）",
+    });
+    expect(within(preview).getByText("Karak（Wiki 示例）")).toBeVisible();
+    expect(within(preview).getByText("基础伤害 29")).toBeVisible();
+    expect(within(preview).getByText("Mod 后预览 68.15")).toBeVisible();
+
+    const damageTrace = screen.getByRole("article", {
+      name: "Karak Wiki 研究基础伤害公式",
+    });
+    expect(
+      within(damageTrace).getByText("29 × (1 + 1.35) = 68.15"),
+    ).toBeVisible();
+    expect(within(damageTrace).getByText("基础伤害加算区")).toBeVisible();
+    expect(within(damageTrace).getByText("未通过游戏实测")).toBeVisible();
+    expect(
+      within(damageTrace).getByRole("link", { name: "公式来源" }),
+    ).toHaveAttribute(
+      "href",
+      "https://warframe.fandom.com/wiki/Damage/Calculation",
+    );
+    expect(screen.queryByText("最终伤害")).not.toBeInTheDocument();
+    expect(screen.queryByText("准确 DPS")).not.toBeInTheDocument();
   });
 });

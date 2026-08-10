@@ -45,6 +45,56 @@
   gap: 7px;
 }
 
+.preview {
+  padding: 13px 14px;
+  background: linear-gradient(135deg, rgb(42 58 65 / 62%), rgb(17 28 34 / 82%));
+  border: 1px solid rgb(237 190 103 / 28%);
+  border-radius: 9px;
+}
+
+.preview h3,
+.preview p,
+.preview dl,
+.preview dd {
+  margin: 0;
+}
+
+.preview h3 {
+  color: #f3d49a;
+  font-size: 0.78rem;
+  font-weight: 550;
+}
+
+.preview p {
+  margin-top: 5px;
+  color: #d8e9ed;
+  font-size: 0.84rem;
+}
+
+.preview dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.preview dl div {
+  padding: 7px 8px;
+  background: rgb(3 12 17 / 46%);
+  border-radius: 5px;
+}
+
+.preview dt {
+  color: #829fa8;
+  font-size: 0.64rem;
+}
+
+.preview dd {
+  margin-top: 2px;
+  color: #edf7f9;
+  font-size: 0.76rem;
+}
+
 .issue {
   margin: 0;
   padding: 9px 11px;
@@ -85,6 +135,13 @@
   font-size: 0.86rem;
   background: #030b10;
   border-radius: 6px;
+}
+
+.formulaSource {
+  width: fit-content;
+  color: #70b5c5;
+  font-size: 0.7rem;
+  text-underline-offset: 3px;
 }
 
 .operands {
