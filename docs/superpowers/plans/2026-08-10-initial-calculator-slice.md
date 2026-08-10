@@ -297,21 +297,21 @@ Expected: grid tests pass.
 - Props: `{ evaluation: BuildEvaluation }`.
 - Shows capacity trace `ceil((4 + 8) / 2) = 6`, stage, operands, source link, and issue `伤害效果尚未通过游戏测试，因此未计入最终伤害`.
 
-- [ ] **Step 1: Write failing panel tests**
+- [x] **Step 1: Write failing panel tests**
 
 Assert exact numeric trace values, semantic incomplete status, issue text, and a link to the corresponding Wiki source.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 Run: `npm test -- src/features/calculator/formula-panel.test.tsx`
 
 Expected: FAIL because the panel is absent.
 
-- [ ] **Step 3: Render structured trace data**
+- [x] **Step 3: Render structured trace data**
 
 Generate presentation from `evaluation.trace`; do not recalculate or parse formula strings in React.
 
-- [ ] **Step 4: Run GREEN**
+- [x] **Step 4: Run GREEN**
 
 Run: `npm test -- src/features/calculator/formula-panel.test.tsx`
 
