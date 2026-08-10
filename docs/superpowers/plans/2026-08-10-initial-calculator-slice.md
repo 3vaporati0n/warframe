@@ -378,7 +378,7 @@ Inspect `/` at approximately 1440×900 and 390×844. Verify no overflow hides ca
 
 For every behavior defect, add or adjust a failing test first. For purely visual CSS corrections, record the observed viewport symptom in the commit message and rerun the component suite plus build.
 
-- [ ] **Step 4: Final verification**
+- [x] **Step 4: Final verification**
 
 Run: `npm run check && npm run build && git diff --check && git status -sb`
 
@@ -394,4 +394,4 @@ Expected: all checks exit 0; branch tracks `origin/agent/initial-mvp`; no uncomm
 | Unsupported damage is not presented as accurate | evaluator and UI tests | pass | `UNVERIFIED_EFFECT` blocks complete damage status |
 | Horizontal card and 4×2 grid are usable | Testing Library plus browser inspection | pass | 1440×900 and 390×844 browser acceptance |
 | Formula display uses executed trace | evaluator/panel integration assertions | pass | Formula panel reads `BuildEvaluation.trace` and operand source refs |
-| Every five file changes are committed and pushed | change ledger plus `git log`/remote branch | unverified | Local batch commits exist; GitHub Git transport is currently resetting/hanging |
+| Every five file changes are committed and pushed | change ledger plus `git log`/remote branch | pass | Eleven local commits uploaded; branch tracks `origin/agent/initial-mvp` |
