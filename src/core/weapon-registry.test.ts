@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import {
   getWeaponRule,
   KARAK_RESEARCH_ID,
+  listWeaponRules,
+  SKANA_RESEARCH_ID,
 } from "./weapon-registry";
 
 describe("primary weapon research registry", () => {
@@ -32,5 +34,37 @@ describe("primary weapon research registry", () => {
       TypeError,
     );
     expect(getWeaponRule(KARAK_RESEARCH_ID)?.baseDamage).toBe(29);
+  });
+});
+
+describe("melee weapon research registry", () => {
+  it("preserves the current Wiki Skana normal-attack profile", () => {
+    expect(getWeaponRule(SKANA_RESEARCH_ID)).toMatchObject({
+      weaponId: "skana-wiki-research",
+      name: "Skana（Wiki 研究样本）",
+      category: "melee",
+      baseDamage: 120,
+      damageTypes: {
+        impact: 18,
+        puncture: 18,
+        slash: 84,
+      },
+      dataVerification: "unverified",
+      source: {
+        label: "WARFRAME Wiki — Sword weapon table",
+        url: "https://wiki.warframe.com/w/Sword",
+        retrievedAt: "2026-08-10",
+      },
+    });
+  });
+
+  it("lists each research weapon exactly once without exposing mutation", () => {
+    const weapons = listWeaponRules();
+
+    expect(weapons.map((weapon) => weapon.weaponId)).toEqual([
+      KARAK_RESEARCH_ID,
+      SKANA_RESEARCH_ID,
+    ]);
+    expect(Object.isFrozen(weapons)).toBe(true);
   });
 });

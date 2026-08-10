@@ -9,6 +9,7 @@ export type Polarity =
   | "none";
 
 export type VerificationState = "verified" | "unverified" | "unsupported";
+export type WeaponCategory = "primary" | "melee";
 
 export interface WikiSourceRef {
   readonly label: string;
@@ -34,7 +35,7 @@ export interface EffectRule {
 export interface ModCardRule {
   readonly modId: string;
   readonly name: string;
-  readonly category: "primary" | "melee";
+  readonly category: WeaponCategory;
   readonly rarity: "common" | "uncommon" | "rare" | "legendary";
   readonly polarity: Polarity;
   readonly maxRank: number;
@@ -47,8 +48,13 @@ export interface ModCardRule {
 export interface WeaponRule {
   readonly weaponId: string;
   readonly name: string;
-  readonly category: "primary" | "melee";
+  readonly category: WeaponCategory;
   readonly baseDamage: number;
+  readonly damageTypes?: Readonly<{
+    impact: number;
+    puncture: number;
+    slash: number;
+  }>;
   readonly dataVerification: VerificationState;
   readonly source: WikiSourceRef;
 }
