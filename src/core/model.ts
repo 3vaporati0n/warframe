@@ -74,19 +74,44 @@ export interface BuildInput {
   readonly weaponId?: string;
   readonly capacityLimit: number;
   readonly slots: readonly BuildSlot[];
+  readonly abilityBuffs?: readonly AbilityBuffInput[];
+  readonly weaponArcanes?: readonly WeaponArcaneInput[];
+}
+
+export interface AbilityBuffInput {
+  readonly abilityId: string;
+  readonly abilityStrengthPercent: number;
+  readonly active: boolean;
+}
+
+export interface WeaponArcaneInput {
+  readonly arcaneId: string;
+  readonly rank: number;
+  readonly stacks: number;
+  readonly active: boolean;
 }
 
 export interface FormulaOperand {
   readonly label: string;
   readonly value: number;
-  readonly source: "weapon" | "mod" | "rank" | "slot" | "system";
+  readonly source:
+    | "weapon"
+    | "mod"
+    | "rank"
+    | "slot"
+    | "system"
+    | "ability"
+    | "arcane";
   readonly sourceRef?: WikiSourceRef;
 }
 
 export interface FormulaTrace {
   readonly id: string;
-  readonly stage: "capacity" | "base-damage";
-  readonly multiplierGroup?: "capacity" | "base-damage-additive";
+  readonly stage: "capacity" | "base-damage" | "faction-damage";
+  readonly multiplierGroup?:
+    | "capacity"
+    | "base-damage-additive"
+    | "faction-damage-additive";
   readonly expression: string;
   readonly result: number;
   readonly operands: readonly FormulaOperand[];
@@ -101,8 +126,16 @@ export interface BuildIssue {
     | "UNKNOWN_MOD"
     | "INVALID_RANK"
     | "DUPLICATE_MOD"
+    | "INCOMPATIBLE_MOD"
     | "OVER_CAPACITY"
-    | "UNVERIFIED_EFFECT";
+    | "UNVERIFIED_EFFECT"
+    | "UNKNOWN_ABILITY"
+    | "INVALID_ABILITY_STRENGTH"
+    | "UNKNOWN_ARCANE"
+    | "INVALID_ARCANE_RANK"
+    | "INVALID_ARCANE_STACKS"
+    | "INCOMPATIBLE_ARCANE"
+    | "UNVERIFIED_EXTERNAL_EFFECT";
   readonly message: string;
   readonly slotIndex?: number;
   readonly modId?: string;
@@ -112,6 +145,7 @@ export interface DamageResearchPreview {
   readonly weaponName: string;
   readonly baseDamage: number;
   readonly moddedBaseDamage: number;
+  readonly damageAfterFaction?: number;
   readonly verification: "unverified";
 }
 

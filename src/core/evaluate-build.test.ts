@@ -1,7 +1,14 @@
 import { describe, expect, it } from "vitest";
 
 import { evaluateBuild } from "./evaluate-build";
-import { KARAK_RESEARCH_ID } from "./weapon-registry";
+import {
+  PRIMARY_MERCILESS_ID,
+  ROAR_ID,
+} from "./external-modifier-registry";
+import {
+  KARAK_RESEARCH_ID,
+  SKANA_RESEARCH_ID,
+} from "./weapon-registry";
 
 const serrationSource = {
   label: "WARFRAME Wiki — Serration revision 2699779",
@@ -267,6 +274,127 @@ describe("evaluateBuild", () => {
     expect(evaluation.issues).toContainEqual({
       code: "UNVERIFIED_WEAPON_DATA",
       message: "Karak（Wiki 示例）的基础数据尚未通过结构化快照与游戏实测双重验证。",
+    });
+  });
+
+  it("evaluates Pressure Point on the Skana melee research fixture", () => {
+    const evaluation = evaluateBuild({
+      weaponId: SKANA_RESEARCH_ID,
+      capacityLimit: 30,
+      slots: [
+        {
+          index: 0,
+          polarity: "madurai",
+          installedMod: { modId: "pressure-point", rank: 5 },
+        },
+      ],
+    });
+
+    expect(evaluation.capacity.used).toBe(5);
+    expect(evaluation.researchPreview).toMatchObject({
+      weaponName: "Skana（Wiki 研究样本）",
+      baseDamage: 120,
+      moddedBaseDamage: 264,
+    });
+    expect(evaluation.trace).toContainEqual(
+      expect.objectContaining({
+        multiplierGroup: "base-damage-additive",
+        expression: "120 × (1 + 1.2) = 264",
+      }),
+    );
+  });
+
+  it("keeps a primary Mod out of a melee build", () => {
+    const evaluation = evaluateBuild({
+      weaponId: SKANA_RESEARCH_ID,
+      capacityLimit: 30,
+      slots: [
+        {
+          index: 0,
+          polarity: "madurai",
+          installedMod: { modId: "serration", rank: 8 },
+        },
+      ],
+    });
+
+    expect(evaluation.capacity.used).toBe(0);
+    expect(evaluation.isLegal).toBe(false);
+    expect(evaluation.issues).toContainEqual({
+      code: "INCOMPATIBLE_MOD",
+      message: "Serration 不能安装在 melee 武器上。",
+      slotIndex: 0,
+      modId: "serration",
+    });
+  });
+
+  it("shows Merciless in base damage and Roar in a separate faction multiplier", () => {
+    const evaluation = evaluateBuild({
+      weaponId: KARAK_RESEARCH_ID,
+      capacityLimit: 30,
+      slots: [
+        {
+          index: 0,
+          polarity: "madurai",
+          installedMod: { modId: "serration", rank: 8 },
+        },
+      ],
+      weaponArcanes: [
+        {
+          arcaneId: PRIMARY_MERCILESS_ID,
+          rank: 5,
+          stacks: 12,
+          active: true,
+        },
+      ],
+      abilityBuffs: [
+        {
+          abilityId: ROAR_ID,
+          abilityStrengthPercent: 130,
+          active: true,
+        },
+      ],
+    });
+
+    expect(evaluation.researchPreview).toMatchObject({
+      moddedBaseDamage: 172.55,
+      damageAfterFaction: 284.7075,
+    });
+    expect(evaluation.trace).toContainEqual(
+      expect.objectContaining({
+        stage: "base-damage",
+        multiplierGroup: "base-damage-additive",
+        expression: "29 × (1 + 1.35 + 3.6) = 172.55",
+      }),
+    );
+    expect(evaluation.trace).toContainEqual(
+      expect.objectContaining({
+        stage: "faction-damage",
+        multiplierGroup: "faction-damage-additive",
+        expression: "172.55 × (1 + 0.65) = 284.7075",
+      }),
+    );
+  });
+
+  it("rejects an impossible Merciless state without applying it", () => {
+    const evaluation = evaluateBuild({
+      weaponId: KARAK_RESEARCH_ID,
+      capacityLimit: 30,
+      slots: [],
+      weaponArcanes: [
+        {
+          arcaneId: PRIMARY_MERCILESS_ID,
+          rank: 5,
+          stacks: 13,
+          active: true,
+        },
+      ],
+    });
+
+    expect(evaluation.isLegal).toBe(false);
+    expect(evaluation.researchPreview?.moddedBaseDamage).toBe(29);
+    expect(evaluation.issues).toContainEqual({
+      code: "INVALID_ARCANE_STACKS",
+      message: "Primary Merciless 的层数必须是 0–12 的整数。",
     });
   });
 });

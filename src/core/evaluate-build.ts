@@ -1,4 +1,8 @@
 import { slotDrain } from "./capacity";
+import {
+  getAbilityBuffRule,
+  getWeaponArcaneRule,
+} from "./external-modifier-registry";
 import { getModRule } from "./mod-registry";
 import { getWeaponRule } from "./weapon-registry";
 import type {
@@ -82,10 +86,25 @@ export function evaluateBuild(input: BuildInput): BuildEvaluation {
   const trace: FormulaTrace[] = [];
   const seenModIds = new Set<string>();
   const baseDamageContributions: Array<{
-    rule: ModCardRule;
-    rankValue: RankValue;
+    label: string;
+    effectMultiplier: number;
+    source: "rank" | "arcane";
+    sourceRef: WikiSourceRef;
+  }> = [];
+  const factionDamageContributions: Array<{
+    label: string;
+    effectMultiplier: number;
+    sourceRef: WikiSourceRef;
   }> = [];
   let usedCapacity = 0;
+  const weapon = input.weaponId ? getWeaponRule(input.weaponId) : undefined;
+
+  if (input.weaponId && !weapon) {
+    issues.push({
+      code: "UNKNOWN_WEAPON",
+      message: `未知武器：${input.weaponId}。`,
+    });
+  }
 
   for (const slot of input.slots) {
     if (!slot.installedMod) {
@@ -107,6 +126,16 @@ export function evaluateBuild(input: BuildInput): BuildEvaluation {
       issues.push({
         code: "DUPLICATE_MOD",
         message: `${rule.name} 不能重复安装。`,
+        slotIndex: slot.index,
+        modId: rule.modId,
+      });
+      continue;
+    }
+
+    if (weapon && rule.category !== weapon.category) {
+      issues.push({
+        code: "INCOMPATIBLE_MOD",
+        message: `${rule.name} 不能安装在 ${weapon.category} 武器上。`,
         slotIndex: slot.index,
         modId: rule.modId,
       });
@@ -136,7 +165,12 @@ export function evaluateBuild(input: BuildInput): BuildEvaluation {
     trace.push(capacityTrace(slot, rule, rankValue, adjustedDrain));
 
     if (rule.effects.some((effect) => effect.kind === "base-damage")) {
-      baseDamageContributions.push({ rule, rankValue });
+      baseDamageContributions.push({
+        label: `${rule.name} R${rankValue.rank}`,
+        effectMultiplier: rankValue.effectPercent / 100,
+        source: "rank",
+        sourceRef: rule.sources[0] as WikiSourceRef,
+      });
     }
 
     if (rule.effects.some((effect) => effect.verification !== "verified")) {
@@ -156,16 +190,108 @@ export function evaluateBuild(input: BuildInput): BuildEvaluation {
     });
   }
 
-  let researchPreview: BuildEvaluation["researchPreview"];
-  if (input.weaponId) {
-    const weapon = getWeaponRule(input.weaponId);
+  for (const inputArcane of input.weaponArcanes ?? []) {
+    if (!inputArcane.active) {
+      continue;
+    }
 
-    if (!weapon) {
+    const rule = getWeaponArcaneRule(inputArcane.arcaneId);
+    if (!rule) {
       issues.push({
-        code: "UNKNOWN_WEAPON",
-        message: `未知武器：${input.weaponId}。`,
+        code: "UNKNOWN_ARCANE",
+        message: `未知武器赋能：${inputArcane.arcaneId}。`,
       });
-    } else {
+      continue;
+    }
+
+    const rankValue = rule.rankValues.find(
+      (candidate) => candidate.rank === inputArcane.rank,
+    );
+    if (!rankValue) {
+      issues.push({
+        code: "INVALID_ARCANE_RANK",
+        message: `${rule.name} 不支持等级 ${inputArcane.rank}。`,
+      });
+      continue;
+    }
+
+    if (
+      !Number.isInteger(inputArcane.stacks) ||
+      inputArcane.stacks < 0 ||
+      inputArcane.stacks > rule.maxStacks
+    ) {
+      issues.push({
+        code: "INVALID_ARCANE_STACKS",
+        message: `${rule.name} 的层数必须是 0–${rule.maxStacks} 的整数。`,
+      });
+      continue;
+    }
+
+    if (weapon && rule.category !== weapon.category) {
+      issues.push({
+        code: "INCOMPATIBLE_ARCANE",
+        message: `${rule.name} 不能用于 ${weapon.category} 武器。`,
+      });
+      continue;
+    }
+
+    baseDamageContributions.push({
+      label: `${rule.name} R${inputArcane.rank} × ${inputArcane.stacks} 层`,
+      effectMultiplier:
+        (rankValue.effectPercentPerStack * inputArcane.stacks) / 100,
+      source: "arcane",
+      sourceRef: rule.source,
+    });
+    if (rule.calculationVerification !== "verified") {
+      issues.push({
+        code: "UNVERIFIED_EXTERNAL_EFFECT",
+        message: `${rule.name} 的乘区位置尚未通过游戏实测，因此仅计入研究预览。`,
+      });
+    }
+  }
+
+  for (const inputAbility of input.abilityBuffs ?? []) {
+    if (!inputAbility.active) {
+      continue;
+    }
+
+    const rule = getAbilityBuffRule(inputAbility.abilityId);
+    if (!rule) {
+      issues.push({
+        code: "UNKNOWN_ABILITY",
+        message: `未知战甲增伤技能：${inputAbility.abilityId}。`,
+      });
+      continue;
+    }
+
+    if (
+      !Number.isFinite(inputAbility.abilityStrengthPercent) ||
+      inputAbility.abilityStrengthPercent < 0
+    ) {
+      issues.push({
+        code: "INVALID_ABILITY_STRENGTH",
+        message: `${rule.name} 的技能强度必须是非负数。`,
+      });
+      continue;
+    }
+
+    factionDamageContributions.push({
+      label: `${rule.name} @ ${inputAbility.abilityStrengthPercent}% 强度`,
+      effectMultiplier:
+        (rule.baseEffectPercent / 100) *
+        (inputAbility.abilityStrengthPercent / 100),
+      sourceRef: rule.source,
+    });
+    if (rule.calculationVerification !== "verified") {
+      issues.push({
+        code: "UNVERIFIED_EXTERNAL_EFFECT",
+        message: `${rule.name} 的乘区位置尚未通过游戏实测，因此仅计入研究预览。`,
+      });
+    }
+  }
+
+  let researchPreview: BuildEvaluation["researchPreview"];
+  if (weapon) {
       if (weapon.dataVerification !== "verified") {
         issues.push({
           code: "UNVERIFIED_WEAPON_DATA",
@@ -174,20 +300,33 @@ export function evaluateBuild(input: BuildInput): BuildEvaluation {
       }
 
       const bonusMultiplier = baseDamageContributions.reduce(
-        (total, contribution) =>
-          total + contribution.rankValue.effectPercent / 100,
+        (total, contribution) => total + contribution.effectMultiplier,
         0,
       );
       const moddedBaseDamage = Number(
         (weapon.baseDamage * (1 + bonusMultiplier)).toFixed(6),
       );
-      const bonusText = String(bonusMultiplier);
+      const bonusText = baseDamageContributions.length
+        ? baseDamageContributions
+            .map((contribution) => String(contribution.effectMultiplier))
+            .join(" + ")
+        : "0";
       const resultText = String(moddedBaseDamage);
+      const factionMultiplier = factionDamageContributions.reduce(
+        (total, contribution) => total + contribution.effectMultiplier,
+        0,
+      );
+      const damageAfterFaction = Number(
+        (moddedBaseDamage * (1 + factionMultiplier)).toFixed(6),
+      );
 
       researchPreview = {
         weaponName: weapon.name,
         baseDamage: weapon.baseDamage,
         moddedBaseDamage,
+        ...(factionDamageContributions.length > 0
+          ? { damageAfterFaction }
+          : {}),
         verification: "unverified",
       };
       trace.push({
@@ -203,23 +342,52 @@ export function evaluateBuild(input: BuildInput): BuildEvaluation {
             source: "weapon",
             sourceRef: weapon.source,
           },
-          ...baseDamageContributions.map(({ rule, rankValue }) => ({
-            label: `${rule.name} R${rankValue.rank}`,
-            value: rankValue.effectPercent / 100,
-            source: "rank" as const,
-            sourceRef: rule.sources[0],
+          ...baseDamageContributions.map((contribution) => ({
+            label: contribution.label,
+            value: contribution.effectMultiplier,
+            source: contribution.source,
+            sourceRef: contribution.sourceRef,
           })),
         ],
         source: damageCalculationSource,
         verification: "unverified",
       });
-    }
+
+      if (factionDamageContributions.length > 0) {
+        const factionText = factionDamageContributions
+          .map((contribution) => String(contribution.effectMultiplier))
+          .join(" + ");
+        trace.push({
+          id: `faction-damage-research-${weapon.weaponId}`,
+          stage: "faction-damage",
+          multiplierGroup: "faction-damage-additive",
+          expression: `${moddedBaseDamage} × (1 + ${factionText}) = ${damageAfterFaction}`,
+          result: damageAfterFaction,
+          operands: [
+            {
+              label: "基础伤害加算区结果",
+              value: moddedBaseDamage,
+              source: "system",
+              sourceRef: damageCalculationSource,
+            },
+            ...factionDamageContributions.map((contribution) => ({
+              label: contribution.label,
+              value: contribution.effectMultiplier,
+              source: "ability" as const,
+              sourceRef: contribution.sourceRef,
+            })),
+          ],
+          source: factionDamageContributions[0]?.sourceRef,
+          verification: "unverified",
+        });
+      }
   }
 
   const isLegal = !issues.some(
     (issue) =>
       issue.code !== "UNVERIFIED_EFFECT" &&
-      issue.code !== "UNVERIFIED_WEAPON_DATA",
+      issue.code !== "UNVERIFIED_WEAPON_DATA" &&
+      issue.code !== "UNVERIFIED_EXTERNAL_EFFECT",
   );
 
   return {
