@@ -14,7 +14,12 @@ import {
   PRIMARY_MERCILESS_ID,
   ROAR_ID,
 } from "@/core/external-modifier-registry";
-import { getModRule, listModRules } from "@/core/mod-registry";
+import {
+  getModRule,
+  listModRules,
+  PRESSURE_POINT_ID,
+  SERRATION_ID,
+} from "@/core/mod-registry";
 import type { BuildSlot, Polarity } from "@/core/model";
 import {
   getWeaponRule,
@@ -169,6 +174,11 @@ export function Calculator() {
         <div className={styles.slotsPanel}>
           <SlotGrid
             slots={slots}
+            suggestedModId={
+              selectedWeapon.category === "primary"
+                ? SERRATION_ID
+                : PRESSURE_POINT_ID
+            }
             onInstall={installMod}
             onDropMod={installMod}
             onMoveMod={(fromIndex, toIndex) =>

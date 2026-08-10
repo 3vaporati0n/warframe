@@ -37,6 +37,26 @@ describe("SlotGrid", () => {
     expect(onInstall).toHaveBeenCalledWith(0, "serration");
   });
 
+  it("uses the selected category's suggested Mod for empty-slot buttons", () => {
+    const onInstall = vi.fn();
+
+    render(
+      <SlotGrid
+        slots={emptySlots()}
+        suggestedModId="pressure-point"
+        onInstall={onInstall}
+        onRankChange={() => undefined}
+      />,
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "安装 Pressure Point 到槽位 1",
+      }),
+    );
+    expect(onInstall).toHaveBeenCalledWith(0, "pressure-point");
+  });
+
   it("renders an installed card, prevents replacement, and propagates its rank", () => {
     const onInstall = vi.fn();
     const onRankChange = vi.fn();

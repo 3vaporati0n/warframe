@@ -24,6 +24,7 @@ const polarityOptions: ReadonlyArray<{
 
 interface SlotGridProps {
   readonly slots: readonly BuildSlot[];
+  readonly suggestedModId?: string;
   readonly onInstall: (slotIndex: number, modId: string) => void;
   readonly onRankChange: (slotIndex: number, rank: number) => void;
   readonly onDropMod?: (slotIndex: number, modId: string) => void;
@@ -37,6 +38,7 @@ interface SlotGridProps {
 
 export function SlotGrid({
   slots,
+  suggestedModId = SERRATION_ID,
   onInstall,
   onRankChange,
   onDropMod,
@@ -44,6 +46,7 @@ export function SlotGrid({
   onRemove,
   onPolarityChange,
 }: SlotGridProps) {
+  const suggestedRule = getModRule(suggestedModId);
   function recognizedDragType(types: readonly string[]): boolean {
     return types.includes(MOD_DRAG_TYPE) || types.includes(SLOT_DRAG_TYPE);
   }
@@ -172,9 +175,10 @@ export function SlotGrid({
                 <button
                   type="button"
                   data-empty-slot="true"
-                  onClick={() => onInstall(slot.index, SERRATION_ID)}
+                  onClick={() => onInstall(slot.index, suggestedModId)}
                 >
-                  安装 Serration 到槽位 {slot.index + 1}
+                  安装 {suggestedRule?.name ?? suggestedModId} 到槽位{" "}
+                  {slot.index + 1}
                 </button>
               )}
             </li>

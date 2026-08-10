@@ -67,9 +67,7 @@ describe("Calculator", () => {
       screen.queryByRole("button", { name: "安装 Serration 到首个空槽" }),
     ).not.toBeInTheDocument();
     fireEvent.click(
-      screen.getByRole("button", {
-        name: "安装 Pressure Point 到首个空槽",
-      }),
+      screen.getByRole("button", { name: "安装 Pressure Point 到槽位 1" }),
     );
 
     expect(screen.getByText("容量 5 / 30")).toBeVisible();
