@@ -1,21 +1,53 @@
 "use client";
 
 import { getModRule, SERRATION_ID } from "@/core/mod-registry";
-import type { BuildSlot } from "@/core/model";
+import type { BuildSlot, Polarity } from "@/core/model";
 
 import { ModCard } from "./mod-card";
+import { MOD_DRAG_TYPE } from "./mod-library";
+
+export const SLOT_DRAG_TYPE = "text/x-warframe-slot-index";
+
+const polarityOptions: ReadonlyArray<{
+  value: Polarity;
+  label: string;
+}> = [
+  { value: "none", label: "无极性" },
+  { value: "madurai", label: "Madurai" },
+  { value: "vazarin", label: "Vazarin" },
+  { value: "naramon", label: "Naramon" },
+  { value: "zenurik", label: "Zenurik" },
+  { value: "unairu", label: "Unairu" },
+  { value: "penjaga", label: "Penjaga" },
+  { value: "umbra", label: "Umbra" },
+];
 
 interface SlotGridProps {
   readonly slots: readonly BuildSlot[];
   readonly onInstall: (slotIndex: number, modId: string) => void;
   readonly onRankChange: (slotIndex: number, rank: number) => void;
+  readonly onDropMod?: (slotIndex: number, modId: string) => void;
+  readonly onMoveMod?: (fromIndex: number, toIndex: number) => void;
+  readonly onRemove?: (slotIndex: number) => void;
+  readonly onPolarityChange?: (
+    slotIndex: number,
+    polarity: Polarity,
+  ) => void;
 }
 
 export function SlotGrid({
   slots,
   onInstall,
   onRankChange,
+  onDropMod,
+  onMoveMod,
+  onRemove,
+  onPolarityChange,
 }: SlotGridProps) {
+  function recognizedDragType(types: readonly string[]): boolean {
+    return types.includes(MOD_DRAG_TYPE) || types.includes(SLOT_DRAG_TYPE);
+  }
+
   return (
     <section aria-labelledby="mod-slots-heading">
       <h2 id="mod-slots-heading">Mod 槽位</h2>
@@ -25,15 +57,86 @@ export function SlotGrid({
           const rule = installed ? getModRule(installed.modId) : undefined;
 
           return (
-            <li key={slot.index} aria-label={`槽位 ${slot.index + 1}`}>
+            <li
+              key={slot.index}
+              aria-label={`槽位 ${slot.index + 1}`}
+              onDragOver={(event) => {
+                if (recognizedDragType(Array.from(event.dataTransfer.types))) {
+                  event.preventDefault();
+                  event.dataTransfer.dropEffect = installed ? "move" : "copy";
+                }
+              }}
+              onDrop={(event) => {
+                const types = Array.from(event.dataTransfer.types);
+                if (types.includes(SLOT_DRAG_TYPE)) {
+                  event.preventDefault();
+                  const fromIndex = Number(
+                    event.dataTransfer.getData(SLOT_DRAG_TYPE),
+                  );
+                  if (Number.isInteger(fromIndex)) {
+                    onMoveMod?.(fromIndex, slot.index);
+                  }
+                  return;
+                }
+
+                if (!installed && types.includes(MOD_DRAG_TYPE)) {
+                  event.preventDefault();
+                  const modId = event.dataTransfer.getData(MOD_DRAG_TYPE);
+                  if (modId) {
+                    (onDropMod ?? onInstall)(slot.index, modId);
+                  }
+                }
+              }}
+            >
+              <label htmlFor={`slot-${slot.index}-polarity`}>
+                槽位 {slot.index + 1} 极性
+              </label>
+              <select
+                id={`slot-${slot.index}-polarity`}
+                value={slot.polarity}
+                onChange={(event) =>
+                  onPolarityChange?.(
+                    slot.index,
+                    event.currentTarget.value as Polarity,
+                  )
+                }
+              >
+                {polarityOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+
               {installed ? (
                 rule ? (
-                  <ModCard
-                    rule={rule}
-                    rank={installed.rank}
-                    slotPolarity={slot.polarity}
-                    onRankChange={(rank) => onRankChange(slot.index, rank)}
-                  />
+                  <>
+                    <div
+                      draggable
+                      aria-label={`拖动 ${rule.name}（槽位 ${slot.index + 1}）`}
+                      onDragStart={(event) => {
+                        event.dataTransfer.effectAllowed = "move";
+                        event.dataTransfer.setData(
+                          SLOT_DRAG_TYPE,
+                          String(slot.index),
+                        );
+                      }}
+                    >
+                      <ModCard
+                        rule={rule}
+                        rank={installed.rank}
+                        slotPolarity={slot.polarity}
+                        onRankChange={(rank) => onRankChange(slot.index, rank)}
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => onRemove?.(slot.index)}
+                      aria-label={`移除 ${rule.name}`}
+                    >
+                      移除
+                    </button>
+                  </>
                 ) : (
                   <p role="alert">未知 Mod：{installed.modId}</p>
                 )
