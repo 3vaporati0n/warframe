@@ -270,7 +270,7 @@ At desktop width and 390×844, install by click, edit rank and polarity, and mov
 
 Document exact observed capacity/formula transitions and the image-policy boundary. Check every completed plan step and update the acceptance matrix with real evidence only.
 
-- [ ] **Step 4: Commit and push the final documentation batch**
+- [x] **Step 4: Commit and push the final documentation batch**
 
 ```bash
 git add README.md docs/validation/2026-08-10-initial-slice-acceptance.md docs/superpowers/plans/2026-08-10-arsenal-interaction-slice.md
@@ -278,7 +278,7 @@ git commit -m "docs: record arsenal interaction acceptance"
 git push
 ```
 
-- [ ] **Step 5: Verify remote parity**
+- [x] **Step 5: Verify remote parity**
 
 Run: `git status -sb && git rev-parse HEAD && git rev-parse @{upstream}`
 Expected: clean tracked branch and identical local/upstream SHAs.
@@ -293,7 +293,7 @@ Expected: clean tracked branch and identical local/upstream SHAs.
 | Wiki damage formula is visible but never final | evaluator/panel assertions | pass |
 | Duplicate/invalid edits preserve prior state | pure editor boundary tests | pass |
 | Horizontal cards remain usable at desktop and narrow widths | browser acceptance | pass |
-| Each five-file batch is committed and pushed | git log + upstream parity | unverified — remote retry pending |
+| Each five-file batch is committed and pushed | git log + upstream parity | pass |
 
 ## Self-Review
 

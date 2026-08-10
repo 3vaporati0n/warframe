@@ -70,4 +70,4 @@ git diff --check
 | Narrow layout | pass | At 390×844, `documentWidth === viewportWidth === 390`; formula and horizontal library card remained readable |
 | Drag handler | automated component evidence | Browser controller exposed no drag injection primitive; real DOM drag event handlers passed component tests |
 
-No visual or functional defect requiring a source correction was observed. Remote Git transport timed out after the fourth local batch; all commits remain intact for retry.
+No visual or functional defect requiring a source correction was observed. Remote Git transport timed out temporarily after the fourth local batch, then recovered; all local commits were uploaded without rewriting history.
