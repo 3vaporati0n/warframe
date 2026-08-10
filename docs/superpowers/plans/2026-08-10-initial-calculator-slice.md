@@ -237,21 +237,21 @@ Expected: every core test passes.
 - Props: `{ rule: ModCardRule; rank: number; slotPolarity: Polarity; onRankChange(rank: number): void }`.
 - Accessible output: article named for the Mod, rank slider labelled `等级`, effect text, raw capacity, adjusted capacity, polarity, and verification badge.
 
-- [ ] **Step 1: Write failing component tests**
+- [x] **Step 1: Write failing component tests**
 
 Render Serration R8 in a matching slot and assert `+135% 基础伤害`, `12 → 6`, `8 / 10`, and `未完成验证`. Change the slider to rank 10 and assert callback `10`.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 Run: `npm test -- src/features/calculator/mod-card.test.tsx`
 
 Expected: FAIL because the component is absent.
 
-- [ ] **Step 3: Implement the horizontal semantic card**
+- [x] **Step 3: Implement the horizontal semantic card**
 
 Use a neutral decorative panel with no incorrect external image. Capacity values must call `rankDrain` and `slotDrain`.
 
-- [ ] **Step 4: Run GREEN**
+- [x] **Step 4: Run GREEN**
 
 Run: `npm test -- src/features/calculator/mod-card.test.tsx`
 
@@ -267,21 +267,21 @@ Expected: card tests pass.
 - Props: `{ slots: readonly BuildSlot[]; onInstall(slotIndex: number, modId: string): void; onRankChange(slotIndex: number, rank: number): void }`.
 - Initial interaction supports click-to-install as an accessible fallback; pointer drag-and-drop is added only after this behavior is stable.
 
-- [ ] **Step 1: Write failing grid tests**
+- [x] **Step 1: Write failing grid tests**
 
 Assert eight labelled slots, an empty-state install button, one installed Serration card, disabled install into an occupied slot, and rank callback with the correct slot index.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 Run: `npm test -- src/features/calculator/slot-grid.test.tsx`
 
 Expected: FAIL because the grid is absent.
 
-- [ ] **Step 3: Implement the minimal grid**
+- [x] **Step 3: Implement the minimal grid**
 
 Render slots in index order and reuse `ModCard`; never duplicate capacity logic in the grid.
 
-- [ ] **Step 4: Run GREEN**
+- [x] **Step 4: Run GREEN**
 
 Run: `npm test -- src/features/calculator/slot-grid.test.tsx`
 
