@@ -1,0 +1,176 @@
+.panel {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  color: #e7f2f6;
+  background: linear-gradient(145deg, rgb(12 28 38 / 96%), rgb(5 13 20 / 98%));
+  border: 1px solid rgb(105 176 191 / 25%);
+  border-radius: 16px;
+  box-shadow: 0 18px 46px rgb(0 0 0 / 24%);
+}
+
+.heading {
+  display: flex;
+  gap: 16px;
+  align-items: start;
+  justify-content: space-between;
+}
+
+.eyebrow {
+  margin: 0 0 3px;
+  color: #7397a4;
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+}
+
+.heading h2 {
+  margin: 0;
+  font-size: 1.08rem;
+  font-weight: 520;
+}
+
+.status {
+  margin: 0;
+  padding: 5px 9px;
+  color: #ffcf82;
+  font-size: 0.72rem;
+  white-space: nowrap;
+  background: rgb(94 57 19 / 42%);
+  border: 1px solid rgb(255 186 88 / 32%);
+  border-radius: 999px;
+}
+
+.issues {
+  display: grid;
+  gap: 7px;
+}
+
+.preview {
+  padding: 13px 14px;
+  background: linear-gradient(135deg, rgb(42 58 65 / 62%), rgb(17 28 34 / 82%));
+  border: 1px solid rgb(237 190 103 / 28%);
+  border-radius: 9px;
+}
+
+.preview h3,
+.preview p,
+.preview dl,
+.preview dd {
+  margin: 0;
+}
+
+.preview h3 {
+  color: #f3d49a;
+  font-size: 0.78rem;
+  font-weight: 550;
+}
+
+.preview p {
+  margin-top: 5px;
+  color: #d8e9ed;
+  font-size: 0.84rem;
+}
+
+.preview dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.preview dl div {
+  padding: 7px 8px;
+  background: rgb(3 12 17 / 46%);
+  border-radius: 5px;
+}
+
+.preview dt {
+  color: #829fa8;
+  font-size: 0.64rem;
+}
+
+.preview dd {
+  margin-top: 2px;
+  color: #edf7f9;
+  font-size: 0.76rem;
+}
+
+.issue {
+  margin: 0;
+  padding: 9px 11px;
+  color: #ffd6a3;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  background: rgb(81 43 18 / 38%);
+  border-left: 3px solid #d99f52;
+}
+
+.traces {
+  display: grid;
+  gap: 12px;
+}
+
+.trace {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  background: rgb(5 16 24 / 82%);
+  border: 1px solid rgb(110 170 184 / 20%);
+  border-radius: 10px;
+}
+
+.traceHeader {
+  display: flex;
+  justify-content: space-between;
+  color: #8ec5d0;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+}
+
+.expression {
+  display: block;
+  overflow-x: auto;
+  padding: 10px 12px;
+  color: #f3d49a;
+  font-size: 0.86rem;
+  background: #030b10;
+  border-radius: 6px;
+}
+
+.formulaSource {
+  width: fit-content;
+  color: #70b5c5;
+  font-size: 0.7rem;
+  text-underline-offset: 3px;
+}
+
+.operands {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.operand {
+  display: grid;
+  grid-template-columns: minmax(90px, 0.7fr) minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  font-size: 0.75rem;
+}
+
+.operand dt {
+  color: #78939d;
+}
+
+.operand dd {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 9px;
+  margin: 0;
+  color: #d6e7ec;
+}
+
+.operand a {
+  color: #70b5c5;
+  text-underline-offset: 3px;
+}

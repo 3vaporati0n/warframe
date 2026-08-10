@@ -1,0 +1,150 @@
+.library {
+  margin-top: 18px;
+  padding: 18px;
+  background: rgb(5 15 22 / 72%);
+  border: 1px solid rgb(110 173 185 / 16%);
+  border-radius: 16px;
+}
+
+.header {
+  display: flex;
+  gap: 20px;
+  align-items: end;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.header h2,
+.header p {
+  margin: 0;
+}
+
+.header h2 {
+  color: #dcebef;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.eyebrow,
+.hint {
+  color: #789ba8;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 390px), 1fr));
+  gap: 12px;
+}
+
+.card {
+  display: grid;
+  grid-template-columns: minmax(96px, 0.36fr) minmax(0, 1fr);
+  min-height: 158px;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgb(18 42 52 / 92%), rgb(7 18 25 / 96%));
+  border: 1px solid rgb(118 184 198 / 28%);
+  border-radius: 14px 4px 14px 4px;
+  cursor: grab;
+}
+
+.card:active {
+  cursor: grabbing;
+}
+
+.card:focus-within {
+  border-color: #75c4d3;
+  box-shadow: 0 0 0 2px rgb(117 196 211 / 18%);
+}
+
+.art {
+  display: grid;
+  place-items: center;
+  min-height: 100%;
+  padding: 12px;
+  color: #7196a0;
+  font-size: 0.7rem;
+  text-align: center;
+  background:
+    radial-gradient(circle at 45% 35%, rgb(84 151 166 / 24%), transparent 45%),
+    linear-gradient(145deg, #102a34, #071218);
+  border-right: 1px solid rgb(122 186 199 / 18%);
+}
+
+.body {
+  min-width: 0;
+  padding: 13px 14px;
+}
+
+.body h3,
+.body p {
+  margin: 0;
+}
+
+.body h3 {
+  margin: 3px 0 8px;
+  color: #edf8fa;
+  font-size: 1.16rem;
+  font-weight: 500;
+}
+
+.meta,
+.status {
+  color: #84a9b3;
+  font-size: 0.68rem;
+}
+
+.effect {
+  color: #c6e1e7;
+  font-size: 0.84rem;
+}
+
+.status {
+  margin-top: 5px !important;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 14px;
+}
+
+.actions button,
+.actions a {
+  padding: 6px 10px;
+  color: #cfe8ed;
+  font-size: 0.72rem;
+  text-decoration: none;
+  background: rgb(37 87 99 / 55%);
+  border: 1px solid rgb(119 189 204 / 28%);
+  border-radius: 6px;
+}
+
+.actions button {
+  cursor: pointer;
+}
+
+.actions button:hover,
+.actions button:focus-visible,
+.actions a:hover,
+.actions a:focus-visible {
+  color: #fff;
+  border-color: #75c4d3;
+  outline: none;
+}
+
+@media (max-width: 560px) {
+  .library {
+    padding: 12px;
+  }
+
+  .header {
+    display: grid;
+  }
+
+  .card {
+    grid-template-columns: 82px minmax(0, 1fr);
+  }
+}
