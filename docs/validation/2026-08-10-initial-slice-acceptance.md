@@ -71,3 +71,13 @@ git diff --check
 | Drag handler | automated component evidence | Browser controller exposed no drag injection primitive; real DOM drag event handlers passed component tests |
 
 No visual or functional defect requiring a source correction was observed. Remote Git transport timed out temporarily after the fourth local batch, then recovered; all local commits were uploaded without rewriting history.
+
+## Melee, buff, and arcane extension
+
+- Automated gate: 12 test files, 70 tests passed; TypeScript and ESLint passed.
+- Production build: Next.js static export succeeded and generated the `/` route.
+- Desktop browser: Karak + Serration R8 + Roar at 130% displayed separate base-damage and faction-damage traces.
+- Melee browser: switching to Skana reset the primary build, disabled Primary Merciless, filtered the library to Pressure Point, and displayed `120 × (1 + 1.2) = 264`.
+- Narrow viewport: at 390×844, `documentWidth`, `bodyWidth`, and `viewportWidth` were all 390 pixels; no horizontal overflow was observed.
+- Primary Merciless rank/stack calculation is covered by component and core tests. The browser controller could not synthesize a native range-input value change, so its real-browser pointer path remains a manual acceptance item.
+- All damage values remain explicitly labeled as research previews; no final damage or DPS field was introduced.

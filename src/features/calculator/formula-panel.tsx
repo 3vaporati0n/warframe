@@ -29,7 +29,12 @@ function traceName(trace: FormulaTrace): string {
   }
 
   const slotNumber = Number(match[1]) + 1;
-  const modName = match[2] === "serration" ? "Serration" : match[2];
+  const modName =
+    match[2] === "serration"
+      ? "Serration"
+      : match[2] === "pressure-point"
+        ? "Pressure Point"
+        : match[2];
   return `槽位 ${slotNumber} ${modName} 容量公式`;
 }
 
