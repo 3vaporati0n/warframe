@@ -330,11 +330,11 @@ Expected: panel tests pass.
 - `Calculator` owns the eight slots, installs Serration at rank 8, changes rank, and reevaluates synchronously.
 - `/` renders the calculator with a wide desktop layout and a single-column small-screen fallback.
 
-- [ ] **Step 1: Write failing vertical-slice test**
+- [x] **Step 1: Write failing vertical-slice test**
 
 Install Serration into slot 1, verify `容量 6 / 30`, change to rank 10, verify `容量 7 / 30`, and retain the incomplete damage warning.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 Run: `npm test -- src/features/calculator/calculator.test.tsx`
 
