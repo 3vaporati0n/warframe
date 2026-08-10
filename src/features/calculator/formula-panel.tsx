@@ -16,7 +16,11 @@ function sourceName(source: WikiSourceRef): string {
 
 function traceName(trace: FormulaTrace): string {
   if (trace.id.startsWith("base-damage-research-")) {
-    return "Karak Wiki 研究基础伤害公式";
+    return `${trace.id.includes("skana") ? "Skana" : "Karak"} Wiki 研究基础伤害公式`;
+  }
+
+  if (trace.id.startsWith("faction-damage-research-")) {
+    return `${trace.id.includes("skana") ? "Skana" : "Karak"} Wiki 研究派系伤害公式`;
   }
 
   const match = /^capacity-slot-(\d+)-(.+)$/.exec(trace.id);
@@ -32,6 +36,10 @@ function traceName(trace: FormulaTrace): string {
 function multiplierGroupName(trace: FormulaTrace): string {
   if (trace.multiplierGroup === "base-damage-additive") {
     return "基础伤害加算区";
+  }
+
+  if (trace.multiplierGroup === "faction-damage-additive") {
+    return "派系伤害加算区";
   }
 
   return trace.stage === "capacity" ? "容量乘区" : trace.stage;
@@ -70,6 +78,15 @@ export function FormulaPanel({ evaluation }: FormulaPanelProps) {
                 Mod 后预览 {evaluation.researchPreview.moddedBaseDamage}
               </dd>
             </div>
+            {evaluation.researchPreview.damageAfterFaction !== undefined ? (
+              <div>
+                <dt>派系乘区后预览</dt>
+                <dd>
+                  派系乘区后预览{" "}
+                  {evaluation.researchPreview.damageAfterFaction}
+                </dd>
+              </div>
+            ) : null}
           </dl>
         </section>
       ) : null}

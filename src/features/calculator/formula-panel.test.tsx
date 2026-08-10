@@ -2,6 +2,10 @@ import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { evaluateBuild } from "@/core/evaluate-build";
+import {
+  PRIMARY_MERCILESS_ID,
+  ROAR_ID,
+} from "@/core/external-modifier-registry";
 import { KARAK_RESEARCH_ID } from "@/core/weapon-registry";
 
 import { FormulaPanel } from "./formula-panel";
@@ -97,5 +101,44 @@ describe("FormulaPanel", () => {
     );
     expect(screen.queryByText("最终伤害")).not.toBeInTheDocument();
     expect(screen.queryByText("准确 DPS")).not.toBeInTheDocument();
+  });
+
+  it("renders external effects in their separate multiplier groups", () => {
+    const evaluation = evaluateBuild({
+      weaponId: KARAK_RESEARCH_ID,
+      capacityLimit: 30,
+      slots: [],
+      weaponArcanes: [
+        {
+          arcaneId: PRIMARY_MERCILESS_ID,
+          rank: 5,
+          stacks: 12,
+          active: true,
+        },
+      ],
+      abilityBuffs: [
+        {
+          abilityId: ROAR_ID,
+          abilityStrengthPercent: 130,
+          active: true,
+        },
+      ],
+    });
+
+    render(<FormulaPanel evaluation={evaluation} />);
+
+    const preview = screen.getByRole("region", {
+      name: "研究预览（不计入正式伤害）",
+    });
+    expect(within(preview).getByText("派系乘区后预览 220.11")).toBeVisible();
+
+    const factionTrace = screen.getByRole("article", {
+      name: "Karak Wiki 研究派系伤害公式",
+    });
+    expect(within(factionTrace).getByText("派系伤害加算区")).toBeVisible();
+    expect(
+      within(factionTrace).getByText("133.4 × (1 + 0.65) = 220.11"),
+    ).toBeVisible();
+    expect(within(factionTrace).getByText(/Roar @ 130% 强度：0.65/)).toBeVisible();
   });
 });

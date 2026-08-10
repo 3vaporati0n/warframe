@@ -53,4 +53,51 @@ describe("Calculator", () => {
     expect(screen.getByText("容量 0 / 30")).toBeVisible();
     expect(screen.getByText("29 × (1 + 0) = 29")).toBeVisible();
   });
+
+  it("switches to the melee research fixture and installs only Pressure Point", () => {
+    render(<Calculator />);
+
+    fireEvent.change(
+      screen.getByRole("combobox", { name: "武器研究样本" }),
+      { target: { value: "skana-wiki-research" } },
+    );
+
+    expect(screen.getByText(/近战 · Skana/)).toBeVisible();
+    expect(
+      screen.queryByRole("button", { name: "安装 Serration 到首个空槽" }),
+    ).not.toBeInTheDocument();
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "安装 Pressure Point 到首个空槽",
+      }),
+    );
+
+    expect(screen.getByText("容量 5 / 30")).toBeVisible();
+    expect(screen.getByText("120 × (1 + 1.2) = 264")).toBeVisible();
+  });
+
+  it("keeps Merciless additive with base damage and Roar in faction damage", () => {
+    render(<Calculator />);
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "安装 Serration 到首个空槽" }),
+    );
+    fireEvent.click(
+      screen.getByRole("checkbox", { name: "启用 Primary Merciless" }),
+    );
+    fireEvent.change(
+      screen.getByRole("slider", { name: /Primary Merciless 层数/ }),
+      { target: { value: "12" } },
+    );
+    fireEvent.click(screen.getByRole("checkbox", { name: "启用 Roar" }));
+    fireEvent.change(screen.getByRole("spinbutton", { name: "技能强度" }), {
+      target: { value: "130" },
+    });
+
+    expect(screen.getByText("29 × (1 + 1.35 + 3.6) = 172.55")).toBeVisible();
+    expect(
+      screen.getByText("172.55 × (1 + 0.65) = 284.7075"),
+    ).toBeVisible();
+    expect(screen.getByText("派系伤害加算区")).toBeVisible();
+  });
 });
