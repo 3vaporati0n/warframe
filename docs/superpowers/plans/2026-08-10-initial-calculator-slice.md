@@ -340,15 +340,15 @@ Run: `npm test -- src/features/calculator/calculator.test.tsx`
 
 Expected: FAIL because `Calculator` is absent.
 
-- [ ] **Step 3: Implement calculator state and page shell**
+- [x] **Step 3: Implement calculator state and page shell**
 
 Use a client component only at the calculator boundary. Keep `layout.tsx` and `page.tsx` as server components.
 
-- [ ] **Step 4: Add responsive visual hierarchy**
+- [x] **Step 4: Add responsive visual hierarchy**
 
 Use a dark blue/bronze palette, horizontal cards, visible focus states, 4×2 desktop slots, and no image that purports to be the exact in-game Serration art.
 
-- [ ] **Step 5: Run GREEN, build, and lint**
+- [x] **Step 5: Run GREEN, build, and lint**
 
 Run: `npm run check && npm run build`
 
@@ -364,7 +364,7 @@ Expected: tests, typecheck, lint, and production build all exit 0.
 - README documents commands, supported slice, explicit unsupported scope, and primary source URLs.
 - Browser acceptance verifies the page at desktop and narrow widths without changing formula expectations.
 
-- [ ] **Step 1: Document reproducible setup and the accuracy boundary**
+- [x] **Step 1: Document reproducible setup and the accuracy boundary**
 
 Include `npm ci`, `npm run dev`, `npm run check`, and `npm run build`. State that damage output is intentionally incomplete until a saved game observation validates Serration's damage rule.
 
