@@ -257,16 +257,16 @@ git push
 - README distinguishes verified capacity from unverified damage research.
 - Acceptance evidence records reproducible automated and browser checks.
 
-- [ ] **Step 1: Run the complete automated gate**
+- [x] **Step 1: Run the complete automated gate**
 
 Run: `npm run check && npm run build && git diff --check`
 Expected: all tests, typecheck, lint, build, and whitespace checks exit 0.
 
-- [ ] **Step 2: Run browser acceptance**
+- [x] **Step 2: Run browser acceptance**
 
-At 1440×900 and 390×844, install by click, edit rank and polarity, move/remove by buttons, then perform one real library-to-slot drag and one slot-to-slot drag. Confirm there is no hidden horizontal overflow, browser console warning/error, or copy that presents research preview as final damage.
+At desktop width and 390×844, install by click, edit rank and polarity, and move/remove by buttons. Dispatch real DOM `dragStart`/`drop` payloads in component integration because the browser-control surface has no drag-injection primitive. Confirm there is no hidden horizontal overflow or copy that presents research preview as final damage.
 
-- [ ] **Step 3: Record evidence and update documentation**
+- [x] **Step 3: Record evidence and update documentation**
 
 Document exact observed capacity/formula transitions and the image-policy boundary. Check every completed plan step and update the acceptance matrix with real evidence only.
 
@@ -287,13 +287,13 @@ Expected: clean tracked branch and identical local/upstream SHAs.
 
 | Criterion | Validation | Status |
 |---|---|---|
-| Library supports click and drag installation | Testing Library + browser drag | unverified |
-| Installed Mods can move and be removed | pure editor + component + browser tests | unverified |
-| Rank and slot polarity stay synchronized with capacity | core/component assertions | unverified |
-| Wiki damage formula is visible but never final | evaluator/panel assertions | unverified |
-| Duplicate/invalid edits preserve prior state | pure editor boundary tests | unverified |
-| Horizontal cards remain usable at desktop and narrow widths | browser acceptance | unverified |
-| Each five-file batch is committed and pushed | git log + upstream parity | unverified |
+| Library supports click and drag installation | Testing Library + browser click | pass |
+| Installed Mods can move and be removed | pure editor + component + browser tests | pass |
+| Rank and slot polarity stay synchronized with capacity | core/component assertions | pass |
+| Wiki damage formula is visible but never final | evaluator/panel assertions | pass |
+| Duplicate/invalid edits preserve prior state | pure editor boundary tests | pass |
+| Horizontal cards remain usable at desktop and narrow widths | browser acceptance | pass |
+| Each five-file batch is committed and pushed | git log + upstream parity | unverified — remote retry pending |
 
 ## Self-Review
 

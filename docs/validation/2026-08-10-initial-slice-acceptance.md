@@ -12,7 +12,7 @@ npm run build
 
 Latest final result:
 
-- Vitest: 7 test files, 27 tests passed.
+- Vitest: 10 test files, 51 tests passed.
 - TypeScript: passed with zero errors.
 - ESLint: passed with zero warnings or errors.
 - Next.js production build: passed; `/` and `/_not-found` were statically generated.
@@ -42,3 +42,32 @@ Latest final result:
 | Rank event automation | covered by component integration test | Browser-control keyboard injection did not change the range value; Vitest verifies R8→R10, `6→7`, and formula update |
 
 No visual or functional defect requiring a source change was observed in this pass.
+
+## Arsenal interaction iteration
+
+### Automated evidence
+
+```bash
+npm run check
+npm run build
+git diff --check
+```
+
+- Pure editor tests cover immutable install, duplicate rejection, move/swap, removal, rank, polarity, and invalid operations.
+- Evaluator tests cover the unverified Karak research fixture, unknown weapons, R8 `29 × (1 + 1.35) = 68.15`, and the incomplete-result boundary.
+- Component tests dispatch native `dragStart`, `dragOver`, and `drop` events with `application/x-warframe-mod` and `text/x-warframe-slot-index` payloads.
+- Calculator integration covers click install, R8→R10, matching→neutral polarity, adjacent button move, removal, and synchronized formula/capacity updates.
+
+### Browser evidence
+
+| Criterion | Result | Evidence |
+|---|---|---|
+| Empty research state | pass | Karak preview showed `29 × (1 + 0) = 29`, `结果不完整`, and the unverified weapon warning |
+| Click installation | pass | Library install changed capacity `0→6` and preview `29→68.15` |
+| Polarity editing | pass | Slot 1 Madurai→none changed R8 capacity `6→12` |
+| Button reordering | pass | Serration moved from slot 1 to slot 2 while preserving rank and neutral drain |
+| Formula provenance | pass | Base-damage group, game-test warning, formula source, weapon operand, and Serration revision were visible |
+| Narrow layout | pass | At 390×844, `documentWidth === viewportWidth === 390`; formula and horizontal library card remained readable |
+| Drag handler | automated component evidence | Browser controller exposed no drag injection primitive; real DOM drag event handlers passed component tests |
+
+No visual or functional defect requiring a source correction was observed. Remote Git transport timed out after the fourth local batch; all commits remain intact for retry.
