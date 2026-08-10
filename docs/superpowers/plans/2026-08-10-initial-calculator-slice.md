@@ -6,7 +6,7 @@
 
 **Architecture:** The App Router UI consumes a framework-independent TypeScript calculation core under `src/core`. Wiki-derived records live in a source-aware registry and are never inferred at runtime. React owns editor state only; all rank, capacity, legality, and formula trace results come from pure core functions shared with future server code.
 
-**Tech Stack:** Node.js 22, Next.js 16.3.0, React 19.2.8, TypeScript 7.0.2, Vitest 4.1.10, Testing Library 16.3.2, jsdom 29.1.1, CSS Modules/global CSS, npm.
+**Tech Stack:** Node.js 22, Next.js 16.3.0, React 19.2.8, TypeScript 5.9.3, Vitest 4.1.10, Testing Library 16.3.2, jsdom 29.1.1, CSS Modules/global CSS, npm.
 
 ## Global Constraints
 
@@ -95,10 +95,10 @@
     "@types/node": "26.2.0",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4",
-    "eslint": "10.8.1",
+    "eslint": "9.39.5",
     "eslint-config-next": "16.3.0",
     "jsdom": "29.1.1",
-    "typescript": "7.0.2",
+    "typescript": "5.9.3",
     "vitest": "4.1.10"
   }
 }
