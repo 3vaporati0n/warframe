@@ -131,7 +131,7 @@ Expected: exit 0; Vitest may report no test files until Task 2.
 - Produces: `type Polarity = "madurai" | "vazarin" | "naramon" | "zenurik" | "unairu" | "penjaga" | "umbra" | "none"`.
 - Produces: `rankDrain(baseDrain: number, rank: number): number`.
 - Produces: `slotDrain(rawDrain: number, modPolarity: Polarity, slotPolarity: Polarity): number`.
-- Contract: matching non-`none` polarity returns `ceil(rawDrain / 2)`; mismatched non-`none` polarity returns `ceil(rawDrain * 1.25)`; an unpolarized slot returns raw drain.
+- Contract: matching non-`none` polarity returns `ceil(rawDrain / 2)`; mismatched non-`none` polarity returns the nearest integer to `rawDrain * 1.25`; an unpolarized slot returns raw drain.
 
 - [ ] **Step 1: Write failing literal capacity tests**
 
@@ -140,6 +140,7 @@ expect(rankDrain(4, 8)).toBe(12);
 expect(slotDrain(12, "madurai", "madurai")).toBe(6);
 expect(slotDrain(13, "madurai", "madurai")).toBe(7);
 expect(slotDrain(12, "madurai", "vazarin")).toBe(15);
+expect(slotDrain(13, "madurai", "vazarin")).toBe(16);
 expect(slotDrain(12, "madurai", "none")).toBe(12);
 ```
 
