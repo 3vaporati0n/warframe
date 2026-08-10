@@ -52,9 +52,11 @@ export function SlotGrid({
     <section aria-labelledby="mod-slots-heading">
       <h2 id="mod-slots-heading">Mod 槽位</h2>
       <ol aria-label="8 个普通 Mod 槽位">
-        {slots.map((slot) => {
+        {slots.map((slot, position) => {
           const installed = slot.installedMod;
           const rule = installed ? getModRule(installed.modId) : undefined;
+          const previousSlot = slots[position - 1];
+          const nextSlot = slots[position + 1];
 
           return (
             <li
@@ -88,25 +90,27 @@ export function SlotGrid({
                 }
               }}
             >
-              <label htmlFor={`slot-${slot.index}-polarity`}>
-                槽位 {slot.index + 1} 极性
-              </label>
-              <select
-                id={`slot-${slot.index}-polarity`}
-                value={slot.polarity}
-                onChange={(event) =>
-                  onPolarityChange?.(
-                    slot.index,
-                    event.currentTarget.value as Polarity,
-                  )
-                }
-              >
-                {polarityOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
+              <div data-slot-controls="true">
+                <label htmlFor={`slot-${slot.index}-polarity`}>
+                  槽位 {slot.index + 1} 极性
+                </label>
+                <select
+                  id={`slot-${slot.index}-polarity`}
+                  value={slot.polarity}
+                  onChange={(event) =>
+                    onPolarityChange?.(
+                      slot.index,
+                      event.currentTarget.value as Polarity,
+                    )
+                  }
+                >
+                  {polarityOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
               {installed ? (
                 rule ? (
@@ -129,13 +133,37 @@ export function SlotGrid({
                         onRankChange={(rank) => onRankChange(slot.index, rank)}
                       />
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => onRemove?.(slot.index)}
-                      aria-label={`移除 ${rule.name}`}
-                    >
-                      移除
-                    </button>
+                    <div data-card-actions="true">
+                      {previousSlot ? (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            onMoveMod?.(slot.index, previousSlot.index)
+                          }
+                          aria-label={`将 ${rule.name} 移到槽位 ${previousSlot.index + 1}`}
+                        >
+                          ←
+                        </button>
+                      ) : null}
+                      {nextSlot ? (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            onMoveMod?.(slot.index, nextSlot.index)
+                          }
+                          aria-label={`将 ${rule.name} 移到槽位 ${nextSlot.index + 1}`}
+                        >
+                          →
+                        </button>
+                      ) : null}
+                      <button
+                        type="button"
+                        onClick={() => onRemove?.(slot.index)}
+                        aria-label={`移除 ${rule.name}`}
+                      >
+                        移除
+                      </button>
+                    </div>
                   </>
                 ) : (
                   <p role="alert">未知 Mod：{installed.modId}</p>
@@ -143,6 +171,7 @@ export function SlotGrid({
               ) : (
                 <button
                   type="button"
+                  data-empty-slot="true"
                   onClick={() => onInstall(slot.index, SERRATION_ID)}
                 >
                   安装 Serration 到槽位 {slot.index + 1}

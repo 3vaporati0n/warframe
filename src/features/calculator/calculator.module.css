@@ -90,11 +90,30 @@
 
 .slotsPanel :global(li) {
   display: grid;
+  gap: 8px;
   min-width: 0;
   min-height: 176px;
 }
 
-.slotsPanel :global(li > button) {
+.slotsPanel :global([data-slot-controls="true"]) {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  color: #7fa2ad;
+  font-size: 0.68rem;
+}
+
+.slotsPanel :global([data-slot-controls="true"] select) {
+  max-width: 118px;
+  padding: 4px 7px;
+  color: #cce2e7;
+  background: #07151c;
+  border: 1px solid rgb(112 180 195 / 28%);
+  border-radius: 5px;
+}
+
+.slotsPanel :global([data-empty-slot="true"]) {
   width: 100%;
   min-height: 176px;
   color: #6f98a5;
@@ -107,12 +126,35 @@
   cursor: pointer;
 }
 
-.slotsPanel :global(li > button:hover),
-.slotsPanel :global(li > button:focus-visible) {
+.slotsPanel :global([data-empty-slot="true"]):hover,
+.slotsPanel :global([data-empty-slot="true"]):focus-visible {
   color: #d1e9ef;
   border-color: #77bdcc;
   outline: none;
   box-shadow: inset 0 0 36px rgb(67 154 172 / 12%);
+}
+
+.slotsPanel :global([data-card-actions="true"]) {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.slotsPanel :global([data-card-actions="true"] button) {
+  min-width: 34px;
+  padding: 5px 9px;
+  color: #a9c9d1;
+  background: rgb(21 53 64 / 72%);
+  border: 1px solid rgb(112 180 195 / 22%);
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.slotsPanel :global([data-card-actions="true"] button:hover),
+.slotsPanel :global([data-card-actions="true"] button:focus-visible) {
+  color: #fff;
+  border-color: #75c4d3;
+  outline: none;
 }
 
 @media (max-width: 1080px) {

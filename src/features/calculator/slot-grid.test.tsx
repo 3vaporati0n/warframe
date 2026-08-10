@@ -172,4 +172,32 @@ describe("SlotGrid", () => {
     expect(onRemove).toHaveBeenCalledWith(0);
     expect(onPolarityChange).toHaveBeenCalledWith(0, "none");
   });
+
+  it("provides a button equivalent for moving an installed Mod", () => {
+    const onMoveMod = vi.fn();
+    const slots = emptySlots().map((slot) =>
+      slot.index === 0
+        ? {
+            ...slot,
+            installedMod: { modId: "serration", rank: 8 },
+          }
+        : slot,
+    );
+
+    render(
+      <SlotGrid
+        slots={slots}
+        onInstall={() => undefined}
+        onRankChange={() => undefined}
+        onMoveMod={onMoveMod}
+      />,
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "将 Serration 移到槽位 2" }),
+    );
+
+    expect(onMoveMod).toHaveBeenCalledOnce();
+    expect(onMoveMod).toHaveBeenCalledWith(0, 1);
+  });
 });

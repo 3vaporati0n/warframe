@@ -2,10 +2,20 @@
 
 import { useMemo, useState } from "react";
 
+import {
+  installMod as installBuildMod,
+  moveMod,
+  removeMod,
+  setModRank,
+  setSlotPolarity,
+} from "@/core/edit-build";
 import { evaluateBuild } from "@/core/evaluate-build";
-import type { BuildSlot } from "@/core/model";
+import { listModRules } from "@/core/mod-registry";
+import type { BuildSlot, Polarity } from "@/core/model";
+import { KARAK_RESEARCH_ID } from "@/core/weapon-registry";
 
 import { FormulaPanel } from "./formula-panel";
+import { ModLibrary } from "./mod-library";
 import { SlotGrid } from "./slot-grid";
 import styles from "./calculator.module.css";
 
@@ -21,31 +31,34 @@ function initialSlots(): readonly BuildSlot[] {
 export function Calculator() {
   const [slots, setSlots] = useState<readonly BuildSlot[]>(initialSlots);
   const evaluation = useMemo(
-    () => evaluateBuild({ capacityLimit: CAPACITY_LIMIT, slots }),
+    () =>
+      evaluateBuild({
+        weaponId: KARAK_RESEARCH_ID,
+        capacityLimit: CAPACITY_LIMIT,
+        slots,
+      }),
     [slots],
   );
 
   function installMod(slotIndex: number, modId: string): void {
-    setSlots((current) =>
-      current.map((slot) =>
-        slot.index === slotIndex && !slot.installedMod
-          ? { ...slot, installedMod: { modId, rank: 8 } }
-          : slot,
-      ),
-    );
+    setSlots((current) => installBuildMod(current, slotIndex, modId, 8));
+  }
+
+  function installFirstEmpty(modId: string): void {
+    setSlots((current) => {
+      const firstEmpty = current.find((slot) => !slot.installedMod);
+      return firstEmpty
+        ? installBuildMod(current, firstEmpty.index, modId, 8)
+        : current;
+    });
   }
 
   function changeRank(slotIndex: number, rank: number): void {
-    setSlots((current) =>
-      current.map((slot) =>
-        slot.index === slotIndex && slot.installedMod
-          ? {
-              ...slot,
-              installedMod: { ...slot.installedMod, rank },
-            }
-          : slot,
-      ),
-    );
+    setSlots((current) => setModRank(current, slotIndex, rank));
+  }
+
+  function changePolarity(slotIndex: number, polarity: Polarity): void {
+    setSlots((current) => setSlotPolarity(current, slotIndex, polarity));
   }
 
   return (
@@ -54,7 +67,9 @@ export function Calculator() {
         <div>
           <p className={styles.eyebrow}>ARSENAL LAB / VERIFIED RULES ONLY</p>
           <h1 className={styles.title}>Warframe 配装实验台</h1>
-          <p className={styles.subtitle}>主武器 · 容量与极性纵向切片</p>
+          <p className={styles.subtitle}>
+            主武器 · Karak Wiki 研究样本 · 非最终伤害
+          </p>
         </div>
         <div className={styles.summary} aria-label="当前配装摘要">
           <p>
@@ -70,11 +85,20 @@ export function Calculator() {
           <SlotGrid
             slots={slots}
             onInstall={installMod}
+            onDropMod={installMod}
+            onMoveMod={(fromIndex, toIndex) =>
+              setSlots((current) => moveMod(current, fromIndex, toIndex))
+            }
+            onRemove={(slotIndex) =>
+              setSlots((current) => removeMod(current, slotIndex))
+            }
             onRankChange={changeRank}
+            onPolarityChange={changePolarity}
           />
         </div>
         <FormulaPanel evaluation={evaluation} />
       </div>
+      <ModLibrary rules={listModRules()} onInstall={installFirstEmpty} />
     </main>
   );
 }
