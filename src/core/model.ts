@@ -64,6 +64,7 @@ export interface FormulaOperand {
   readonly label: string;
   readonly value: number;
   readonly source: "mod" | "rank" | "slot" | "system";
+  readonly sourceRef?: WikiSourceRef;
 }
 
 export interface FormulaTrace {

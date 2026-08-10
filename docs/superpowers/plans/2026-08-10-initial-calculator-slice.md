@@ -66,7 +66,7 @@
 - Consumes: Node.js `>=20.9.0` and npm.
 - Produces: `npm run dev`, `npm run test`, `npm run typecheck`, `npm run lint`, `npm run build`, and `npm run check`.
 
-- [ ] **Step 1: Create package metadata with pinned direct dependencies**
+- [x] **Step 1: Create package metadata with pinned direct dependencies**
 
 ```json
 {
@@ -104,17 +104,17 @@
 }
 ```
 
-- [ ] **Step 2: Install dependencies and preserve `package-lock.json`**
+- [x] **Step 2: Install dependencies and preserve `package-lock.json`**
 
 Run: `npm install`
 
 Expected: exit 0 and a lockfile with lockfile version 3.
 
-- [ ] **Step 3: Add strict TypeScript, Next.js, ESLint, and Vitest configuration**
+- [x] **Step 3: Add strict TypeScript, Next.js, ESLint, and Vitest configuration**
 
 Configure `@/*` to resolve to `src/*`, use `jsdom`, load `src/test/setup.ts`, and include `src/**/*.test.ts?(x)`.
 
-- [ ] **Step 4: Verify the empty harness**
+- [x] **Step 4: Verify the empty harness**
 
 Run: `npm run typecheck && npm run lint`
 
@@ -133,7 +133,7 @@ Expected: exit 0; Vitest may report no test files until Task 2.
 - Produces: `slotDrain(rawDrain: number, modPolarity: Polarity, slotPolarity: Polarity): number`.
 - Contract: matching non-`none` polarity returns `ceil(rawDrain / 2)`; mismatched non-`none` polarity returns the nearest integer to `rawDrain * 1.25`; an unpolarized slot returns raw drain.
 
-- [ ] **Step 1: Write failing literal capacity tests**
+- [x] **Step 1: Write failing literal capacity tests**
 
 ```ts
 expect(rankDrain(4, 8)).toBe(12);
@@ -146,17 +146,17 @@ expect(slotDrain(12, "madurai", "none")).toBe(12);
 
 The mutation caught is replacing ceiling with floor, ignoring rank, or treating a mismatch as neutral.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 Run: `npm test -- src/core/capacity.test.ts`
 
 Expected: FAIL because `capacity.ts` does not exist.
 
-- [ ] **Step 3: Implement minimal validated arithmetic**
+- [x] **Step 3: Implement minimal validated arithmetic**
 
 Reject negative/non-integer drain and rank with a typed `RangeError`; implement only the three slot states in the interface.
 
-- [ ] **Step 4: Run GREEN and regression check**
+- [x] **Step 4: Run GREEN and regression check**
 
 Run: `npm test -- src/core/capacity.test.ts && npm run typecheck`
 
@@ -175,21 +175,21 @@ Expected: all capacity cases pass and TypeScript exits 0.
 - Serration rank effects are explicit literals `15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165`; raw drains are `4..14`.
 - Source fields include the Wiki Mod data URL, Serration page URL, snapshot retrieval date, and evidence flags. Until a saved game observation fixture exists, damage contribution state is `unverified`; rank/drain/polarity data may be `verified` independently.
 
-- [ ] **Step 1: Write failing registry tests**
+- [x] **Step 1: Write failing registry tests**
 
 Assert rank 0, rank 8, and rank 10 literals; Madurai polarity; max rank 10; rank 8 raw drain 12; and absence for an unknown ID.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 Run: `npm test -- src/core/mod-registry.test.ts`
 
 Expected: FAIL because the registry module is absent.
 
-- [ ] **Step 3: Add the minimum immutable record and lookup**
+- [x] **Step 3: Add the minimum immutable record and lookup**
 
 Freeze the exported record and each rank entry. Do not synthesize rank values from maximum rank.
 
-- [ ] **Step 4: Run GREEN**
+- [x] **Step 4: Run GREEN**
 
 Run: `npm test -- src/core/mod-registry.test.ts`
 
@@ -207,21 +207,21 @@ Expected: registry tests pass.
 - Output includes `capacity.used`, `capacity.limit`, `isLegal`, `isComplete`, `issues`, and ordered `trace` entries.
 - Serration rank/capacity can execute while Serration damage remains excluded and emits issue code `UNVERIFIED_EFFECT`.
 
-- [ ] **Step 1: Write failing evaluator tests**
+- [x] **Step 1: Write failing evaluator tests**
 
 Use hand-derived fixtures for empty slots, Serration R8 in matching Madurai (`used = 6`), mismatch (`used = 15`), over-capacity, duplicate Mod IDs, and an incomplete damage result.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 Run: `npm test -- src/core/evaluate-build.test.ts`
 
 Expected: FAIL because `evaluateBuild` is absent.
 
-- [ ] **Step 3: Implement validation before calculation**
+- [x] **Step 3: Implement validation before calculation**
 
 Reject duplicate IDs and illegal ranks, preserve slot order, calculate capacity, and append trace operands from the same values the evaluator used.
 
-- [ ] **Step 4: Run GREEN and all core tests**
+- [x] **Step 4: Run GREEN and all core tests**
 
 Run: `npm test -- src/core`
 
