@@ -1,6 +1,6 @@
 "use client";
 
-import type { ModCardRule } from "@/core/model";
+import type { ModCardRule, WeaponCategory } from "@/core/model";
 
 import styles from "./mod-library.module.css";
 
@@ -8,10 +8,15 @@ export const MOD_DRAG_TYPE = "application/x-warframe-mod";
 
 interface ModLibraryProps {
   readonly rules: readonly ModCardRule[];
+  readonly category?: WeaponCategory;
   readonly onInstall: (modId: string) => void;
 }
 
-export function ModLibrary({ rules, onInstall }: ModLibraryProps) {
+export function ModLibrary({ rules, category, onInstall }: ModLibraryProps) {
+  const visibleRules = category
+    ? rules.filter((rule) => rule.category === category)
+    : rules;
+
   return (
     <section className={styles.library} aria-labelledby="mod-library-heading">
       <header className={styles.header}>
@@ -23,7 +28,7 @@ export function ModLibrary({ rules, onInstall }: ModLibraryProps) {
       </header>
 
       <div className={styles.list}>
-        {rules.map((rule) => {
+        {visibleRules.map((rule) => {
           const maxRankValue = rule.rankValues.find(
             (rankValue) => rankValue.rank === rule.maxRank,
           );

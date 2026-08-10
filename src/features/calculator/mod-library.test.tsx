@@ -9,7 +9,13 @@ describe("ModLibrary", () => {
   it("shows a source-aware horizontal Mod entry with a click install path", () => {
     const onInstall = vi.fn();
 
-    render(<ModLibrary rules={listModRules()} onInstall={onInstall} />);
+    render(
+      <ModLibrary
+        rules={listModRules()}
+        category="primary"
+        onInstall={onInstall}
+      />,
+    );
 
     expect(screen.getByRole("heading", { name: "Mod 库" })).toBeVisible();
     expect(
@@ -25,6 +31,23 @@ describe("ModLibrary", () => {
 
     expect(onInstall).toHaveBeenCalledOnce();
     expect(onInstall).toHaveBeenCalledWith("serration");
+  });
+
+  it("filters the library by the selected weapon category", () => {
+    render(
+      <ModLibrary
+        rules={listModRules()}
+        category="melee"
+        onInstall={() => undefined}
+      />,
+    );
+
+    expect(
+      screen.getByRole("article", { name: "Pressure Point 库存 Mod" }),
+    ).toBeVisible();
+    expect(
+      screen.queryByRole("article", { name: "Serration 库存 Mod" }),
+    ).not.toBeInTheDocument();
   });
 
   it("writes the Mod ID to the dedicated drag payload", () => {
