@@ -368,13 +368,13 @@ Expected: tests, typecheck, lint, and production build all exit 0.
 
 Include `npm ci`, `npm run dev`, `npm run check`, and `npm run build`. State that damage output is intentionally incomplete until a saved game observation validates Serration's damage rule.
 
-- [ ] **Step 2: Start the app and inspect the real page**
+- [x] **Step 2: Start the app and inspect the real page**
 
 Run: `npm run dev`
 
 Inspect `/` at approximately 1440×900 and 390×844. Verify no overflow hides card controls, keyboard focus is visible, and eight slots remain discoverable.
 
-- [ ] **Step 3: Correct only observed defects and rerun affected tests**
+- [x] **Step 3: Correct only observed defects and rerun affected tests**
 
 For every behavior defect, add or adjust a failing test first. For purely visual CSS corrections, record the observed viewport symptom in the commit message and rerun the component suite plus build.
 
@@ -386,12 +386,12 @@ Expected: all checks exit 0; branch tracks `origin/agent/initial-mvp`; no uncomm
 
 ## Acceptance Matrix
 
-| Criterion | Validation | Initial status |
-|---|---|---|
-| Next.js application starts and builds | `npm run build`, browser load | unverified |
-| Capacity and polarity arithmetic is correct | literal Vitest cases including R8 `12 → 6` | unverified |
-| Rank 0–10 values are explicit | registry tests for boundaries and R8 | unverified |
-| Unsupported damage is not presented as accurate | evaluator and UI tests | unverified |
-| Horizontal card and 4×2 grid are usable | Testing Library plus browser inspection | unverified |
-| Formula display uses executed trace | evaluator/panel integration assertions | unverified |
-| Every five file changes are committed and pushed | change ledger plus `git log`/remote branch | unverified |
+| Criterion | Validation | Status | Evidence |
+|---|---|---|---|
+| Next.js application starts and builds | `npm run build`, browser load | pass | Static `/` build and live localhost page |
+| Capacity and polarity arithmetic is correct | literal Vitest cases including R8 `12 → 6` | pass | Capacity suite covers matching, mismatch, neutral, and invalid input |
+| Rank 0–10 values are explicit | registry tests for boundaries and R8 | pass | Eleven literal rank records tied to Serration revision 2699779 |
+| Unsupported damage is not presented as accurate | evaluator and UI tests | pass | `UNVERIFIED_EFFECT` blocks complete damage status |
+| Horizontal card and 4×2 grid are usable | Testing Library plus browser inspection | pass | 1440×900 and 390×844 browser acceptance |
+| Formula display uses executed trace | evaluator/panel integration assertions | pass | Formula panel reads `BuildEvaluation.trace` and operand source refs |
+| Every five file changes are committed and pushed | change ledger plus `git log`/remote branch | unverified | Local batch commits exist; GitHub Git transport is currently resetting/hanging |
